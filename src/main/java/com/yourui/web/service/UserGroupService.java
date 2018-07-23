@@ -38,6 +38,13 @@ public interface UserGroupService {
     int updateById(Long id);
 
     /**
+     * 不为空则更新
+     * @param record
+     * @return
+     */
+    int updateByPrimaryKeySelective(UserGroup record);
+
+    /**
      * 保存数据
      * @param record
      * @return

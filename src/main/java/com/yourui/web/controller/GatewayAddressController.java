@@ -1,6 +1,6 @@
 package com.yourui.web.controller;
 
-import com.yourui.web.common.Message;
+import com.yourui.web.common.RespMessage;
 import com.yourui.web.model.GatewayAddress;
 import com.yourui.web.service.GatewayAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +30,16 @@ public class GatewayAddressController {
      */
     @RequestMapping(value = "/fidnAll", method = RequestMethod.GET)
     @ResponseBody
-    public Message fidnAllGatewayAddress(){
-        Message message = new Message();
+    public RespMessage fidnAllGatewayAddress(){
+        RespMessage respMessage = new RespMessage();
         List<GatewayAddress> gatewayAddressList = gatewayAddressService.fidnAll();
         GatewayAddress[] scriptInfos = new GatewayAddress[gatewayAddressList.size()];
         GatewayAddress[] infos = gatewayAddressList.toArray(scriptInfos);
 
-        message.setCount(gatewayAddressList.size());
-        message.setData(infos);
+        respMessage.setCount(gatewayAddressList.size());
+        respMessage.setData(infos);
 
-        return message;
+        return respMessage;
     }
 
     /**
@@ -51,14 +51,30 @@ public class GatewayAddressController {
     @ResponseBody
     public ModelAndView detail(Long id) {
         ModelAndView modelAndView = new ModelAndView("script/code");
-        Message message = new Message();
+        RespMessage respMessage = new RespMessage();
 
         GatewayAddress gatewayAddress = gatewayAddressService.selectByPrimaryKey(id);
-        message.setData(gatewayAddress);
+        respMessage.setData(gatewayAddress);
 
-        modelAndView.addObject("message", message);
+        modelAndView.addObject("message", respMessage);
 
         return modelAndView;
+    }
+
+    /**
+     * 查看脚本 用于回显
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/echo", method = RequestMethod.GET)
+    @ResponseBody
+    public RespMessage echo(Long id) {
+        RespMessage respMessage = new RespMessage();
+
+        GatewayAddress gatewayAddress = gatewayAddressService.selectByPrimaryKey(id);
+        respMessage.setData(gatewayAddress);
+
+        return respMessage;
     }
 
     /**
@@ -68,19 +84,19 @@ public class GatewayAddressController {
      */
     @RequestMapping(value = "/delID", method = RequestMethod.POST)
     @ResponseBody
-    public Message delID(Long id){
-        Message message = new Message();
+    public RespMessage delID(Long id){
+        RespMessage respMessage = new RespMessage();
         if (id == null){
-            message.setMsg("id为空,更新数据失败!");
-            message.setCode(-1);
+            respMessage.setMsg("id为空,更新数据失败!");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
 
         gatewayAddressService.updateById(id);
 
-        return message;
+        return respMessage;
     }
 
     /**
@@ -90,17 +106,22 @@ public class GatewayAddressController {
      */
     @RequestMapping("/save")
     @ResponseBody
-    public Message save(@RequestBody GatewayAddress gatewayAddress){
-        Message message = new Message();
+    public RespMessage save(@RequestBody GatewayAddress gatewayAddress){
+        RespMessage respMessage = new RespMessage();
         if (gatewayAddress == null){
-            message.setMsg("id为空,更新数据失败!");
-            message.setCode(-1);
+            respMessage.setMsg("id为空,更新数据失败!");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
-        gatewayAddressService.insertSelective(gatewayAddress);
+        if (gatewayAddress.getId() == null){
+            gatewayAddressService.insertSelective(gatewayAddress);
+        }else {
+            gatewayAddressService.updateByPrimaryKeySelective(gatewayAddress);
+        }
 
-        return message;
+
+        return respMessage;
     }
 }

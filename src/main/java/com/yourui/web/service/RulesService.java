@@ -1,6 +1,5 @@
 package com.yourui.web.service;
 
-import com.yourui.web.common.RulesPlus;
 import com.yourui.web.model.Rules;
 
 import java.util.List;
@@ -32,6 +31,19 @@ public interface RulesService {
     List<Rules> fidnAll();
 
     /**
+     * 查找端口是否已经使用
+     * @return
+     */
+    List<Rules> fidnPort(Long port);
+
+    /**
+     * 用于更新 不同id相同端口数据，不允许更新
+     * @param rules
+     * @return
+     */
+    List<Rules> fidnDifferentPort(Rules rules);
+
+    /**
      * 根据id 查找
      * @param id
      * @return
@@ -44,6 +56,13 @@ public interface RulesService {
      * @return
      */
     int updateById(Long id);
+
+    /**
+     * 不为空则更新
+     * @param rules
+     * @return
+     */
+    int updateByPrimaryKeySelective(Rules rules);
 
     /**
      * 保存数据

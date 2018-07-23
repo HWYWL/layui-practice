@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yourui.web.dao.GameMapper">
-  <resultMap id="BaseResultMap" type="com.yourui.web.model.Game">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="ip" jdbcType="VARCHAR" property="ip" />
-    <result column="game_name" jdbcType="VARCHAR" property="gameName" />
-    <result column="del" jdbcType="TINYINT" property="del" />
+<mapper namespace="com.yourui.web.dao.UsersMapper">
+  <resultMap id="BaseResultMap" type="com.yourui.web.model.Users">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="role" jdbcType="TINYINT" property="role" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="del" jdbcType="TINYINT" property="del" />
     <result column="crtTime" jdbcType="TIMESTAMP" property="crttime" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -68,15 +69,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, ip, game_name, del, remark, crtTime
+    id, username, password, role, remark, del, crtTime
   </sql>
-  <select id="selectByExample" parameterType="com.yourui.web.model.GameExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.yourui.web.model.UsersExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from game
+    from users
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -92,47 +93,50 @@
       </if>
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from game
-    where id = #{id,jdbcType=BIGINT}
+    from users
+    where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from game
-    where id = #{id,jdbcType=BIGINT}
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from users
+    where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.yourui.web.model.GameExample">
-    delete from game
+  <delete id="deleteByExample" parameterType="com.yourui.web.model.UsersExample">
+    delete from users
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.yourui.web.model.Game">
-    insert into game (id, ip, game_name, 
-      del, remark, crtTime
-      )
-    values (#{id,jdbcType=BIGINT}, #{ip,jdbcType=VARCHAR}, #{gameName,jdbcType=VARCHAR}, 
-      #{del,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{crttime,jdbcType=TIMESTAMP}
-      )
+  <insert id="insert" parameterType="com.yourui.web.model.Users">
+    insert into users (id, username, password, 
+      role, remark, del, 
+      crtTime)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{role,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{del,jdbcType=TINYINT}, 
+      #{crttime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yourui.web.model.Game">
-    insert into game
+  <insert id="insertSelective" parameterType="com.yourui.web.model.Users">
+    insert into users
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
-      <if test="ip != null">
-        ip,
+      <if test="username != null">
+        username,
       </if>
-      <if test="gameName != null">
-        game_name,
+      <if test="password != null">
+        password,
       </if>
-      <if test="del != null">
-        del,
+      <if test="role != null">
+        role,
       </if>
       <if test="remark != null">
         remark,
+      </if>
+      <if test="del != null">
+        del,
       </if>
       <if test="crttime != null">
         crtTime,
@@ -140,48 +144,54 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
-        #{id,jdbcType=BIGINT},
+        #{id,jdbcType=INTEGER},
       </if>
-      <if test="ip != null">
-        #{ip,jdbcType=VARCHAR},
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
       </if>
-      <if test="gameName != null">
-        #{gameName,jdbcType=VARCHAR},
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
       </if>
-      <if test="del != null">
-        #{del,jdbcType=TINYINT},
+      <if test="role != null">
+        #{role,jdbcType=TINYINT},
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="del != null">
+        #{del,jdbcType=TINYINT},
       </if>
       <if test="crttime != null">
         #{crttime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.yourui.web.model.GameExample" resultType="java.lang.Long">
-    select count(*) from game
+  <select id="countByExample" parameterType="com.yourui.web.model.UsersExample" resultType="java.lang.Long">
+    select count(*) from users
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update game
+    update users
     <set>
       <if test="record.id != null">
-        id = #{record.id,jdbcType=BIGINT},
+        id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="record.ip != null">
-        ip = #{record.ip,jdbcType=VARCHAR},
+      <if test="record.username != null">
+        username = #{record.username,jdbcType=VARCHAR},
       </if>
-      <if test="record.gameName != null">
-        game_name = #{record.gameName,jdbcType=VARCHAR},
+      <if test="record.password != null">
+        password = #{record.password,jdbcType=VARCHAR},
       </if>
-      <if test="record.del != null">
-        del = #{record.del,jdbcType=TINYINT},
+      <if test="record.role != null">
+        role = #{record.role,jdbcType=TINYINT},
       </if>
       <if test="record.remark != null">
         remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.del != null">
+        del = #{record.del,jdbcType=TINYINT},
       </if>
       <if test="record.crttime != null">
         crtTime = #{record.crttime,jdbcType=TIMESTAMP},
@@ -192,45 +202,50 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update game
-    set id = #{record.id,jdbcType=BIGINT},
-      ip = #{record.ip,jdbcType=VARCHAR},
-      game_name = #{record.gameName,jdbcType=VARCHAR},
-      del = #{record.del,jdbcType=TINYINT},
+    update users
+    set id = #{record.id,jdbcType=INTEGER},
+      username = #{record.username,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      role = #{record.role,jdbcType=TINYINT},
       remark = #{record.remark,jdbcType=VARCHAR},
+      del = #{record.del,jdbcType=TINYINT},
       crtTime = #{record.crttime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yourui.web.model.Game">
-    update game
+  <update id="updateByPrimaryKeySelective" parameterType="com.yourui.web.model.Users">
+    update users
     <set>
-      <if test="ip != null">
-        ip = #{ip,jdbcType=VARCHAR},
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
       </if>
-      <if test="gameName != null">
-        game_name = #{gameName,jdbcType=VARCHAR},
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
       </if>
-      <if test="del != null">
-        del = #{del,jdbcType=TINYINT},
+      <if test="role != null">
+        role = #{role,jdbcType=TINYINT},
       </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="del != null">
+        del = #{del,jdbcType=TINYINT},
       </if>
       <if test="crttime != null">
         crtTime = #{crttime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yourui.web.model.Game">
-    update game
-    set ip = #{ip,jdbcType=VARCHAR},
-      game_name = #{gameName,jdbcType=VARCHAR},
-      del = #{del,jdbcType=TINYINT},
+  <update id="updateByPrimaryKey" parameterType="com.yourui.web.model.Users">
+    update users
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      role = #{role,jdbcType=TINYINT},
       remark = #{remark,jdbcType=VARCHAR},
+      del = #{del,jdbcType=TINYINT},
       crtTime = #{crttime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

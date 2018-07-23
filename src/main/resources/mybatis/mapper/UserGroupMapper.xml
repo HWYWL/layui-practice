@@ -6,6 +6,7 @@
     <result column="user_group_name" jdbcType="VARCHAR" property="userGroupName" />
     <result column="rule_group_ids" jdbcType="VARCHAR" property="ruleGroupIds" />
     <result column="game_id" jdbcType="BIGINT" property="gameId" />
+    <result column="encrypt_key" jdbcType="VARCHAR" property="encryptKey" />
     <result column="gateway_address_ids" jdbcType="VARCHAR" property="gatewayAddressIds" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="del" jdbcType="TINYINT" property="del" />
@@ -70,7 +71,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_group_name, rule_group_ids, game_id, gateway_address_ids, remark, del, crtTime
+    id, user_group_name, rule_group_ids, game_id, encrypt_key, gateway_address_ids, remark, 
+    del, crtTime
   </sql>
   <select id="selectByExample" parameterType="com.yourui.web.model.UserGroupExample" resultMap="BaseResultMap">
     select
@@ -112,11 +114,13 @@
   </delete>
   <insert id="insert" parameterType="com.yourui.web.model.UserGroup">
     insert into user_group (id, user_group_name, rule_group_ids, 
-      game_id, gateway_address_ids, remark, 
-      del, crtTime)
+      game_id, encrypt_key, gateway_address_ids, 
+      remark, del, crtTime
+      )
     values (#{id,jdbcType=BIGINT}, #{userGroupName,jdbcType=VARCHAR}, #{ruleGroupIds,jdbcType=VARCHAR}, 
-      #{gameId,jdbcType=BIGINT}, #{gatewayAddressIds,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
-      #{del,jdbcType=TINYINT}, #{crttime,jdbcType=TIMESTAMP})
+      #{gameId,jdbcType=BIGINT}, #{encryptKey,jdbcType=VARCHAR}, #{gatewayAddressIds,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{del,jdbcType=TINYINT}, #{crttime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yourui.web.model.UserGroup">
     insert into user_group
@@ -132,6 +136,9 @@
       </if>
       <if test="gameId != null">
         game_id,
+      </if>
+      <if test="encryptKey != null">
+        encrypt_key,
       </if>
       <if test="gatewayAddressIds != null">
         gateway_address_ids,
@@ -158,6 +165,9 @@
       </if>
       <if test="gameId != null">
         #{gameId,jdbcType=BIGINT},
+      </if>
+      <if test="encryptKey != null">
+        #{encryptKey,jdbcType=VARCHAR},
       </if>
       <if test="gatewayAddressIds != null">
         #{gatewayAddressIds,jdbcType=VARCHAR},
@@ -194,6 +204,9 @@
       <if test="record.gameId != null">
         game_id = #{record.gameId,jdbcType=BIGINT},
       </if>
+      <if test="record.encryptKey != null">
+        encrypt_key = #{record.encryptKey,jdbcType=VARCHAR},
+      </if>
       <if test="record.gatewayAddressIds != null">
         gateway_address_ids = #{record.gatewayAddressIds,jdbcType=VARCHAR},
       </if>
@@ -217,6 +230,7 @@
       user_group_name = #{record.userGroupName,jdbcType=VARCHAR},
       rule_group_ids = #{record.ruleGroupIds,jdbcType=VARCHAR},
       game_id = #{record.gameId,jdbcType=BIGINT},
+      encrypt_key = #{record.encryptKey,jdbcType=VARCHAR},
       gateway_address_ids = #{record.gatewayAddressIds,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
       del = #{record.del,jdbcType=TINYINT},
@@ -236,6 +250,9 @@
       </if>
       <if test="gameId != null">
         game_id = #{gameId,jdbcType=BIGINT},
+      </if>
+      <if test="encryptKey != null">
+        encrypt_key = #{encryptKey,jdbcType=VARCHAR},
       </if>
       <if test="gatewayAddressIds != null">
         gateway_address_ids = #{gatewayAddressIds,jdbcType=VARCHAR},
@@ -257,6 +274,7 @@
     set user_group_name = #{userGroupName,jdbcType=VARCHAR},
       rule_group_ids = #{ruleGroupIds,jdbcType=VARCHAR},
       game_id = #{gameId,jdbcType=BIGINT},
+      encrypt_key = #{encryptKey,jdbcType=VARCHAR},
       gateway_address_ids = #{gatewayAddressIds,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       del = #{del,jdbcType=TINYINT},

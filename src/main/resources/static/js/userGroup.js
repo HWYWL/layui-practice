@@ -16,7 +16,6 @@ function initTable() {
                 {field:'id', title: 'id'}
                 ,{field:'userGroupName', title: '用户组组名'}
                 ,{field:'ruleGroupIds', title: '所属规则组id'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                ,{field:'gameId', title: '游戏id'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
                 ,{field:'gatewayAddressIds', title: '所属该组的网关id'}
                 ,{field:'remark', title: '备注'}
                 ,{field:'crttime', title: '创建时间'}
@@ -38,6 +37,22 @@ function initTable() {
                     about:true,
 
                     content: '/userGroup/detail?id=' + data.id
+                });
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 2,
+                    title: '编辑脚本',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['50%', '50%'],
+                    about:true,
+
+                    content: '/addUserGroup',
+                    success: function (layero, index) {
+                        //传入参数，并赋值给iframe的元素
+                        var body = layer.getChildFrame('body', index);
+                        body.append("<label class='layui-form-label' id='userGroupId' style='display: none'>ID：" + data.id + "</label>");
+                    }
                 });
             } else if(obj.event === 'del'){
                 layer.confirm('确定删除?', {icon: 3, title:'删除'}, function(index){

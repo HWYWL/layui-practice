@@ -50,13 +50,29 @@ function initTable() {
                                 layer.close(index);
                                 layer.msg("删除成功", {icon: 6});
                             }else{
-                                layer.msg("删除失败", {icon: 5});
+                                layer.msg(data.msg, {icon: 5});
                             }
                         }
 
                     });
                 });
-            }else if(obj.event === 'exe'){
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 2,
+                    title: '编辑脚本',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['50%', '50%'],
+                    about:true,
+
+                    content: '/addRuleGroup',
+                    success: function (layero, index) {
+                        //传入参数，并赋值给iframe的元素
+                        var body = layer.getChildFrame('body', index);
+                        body.append("<label class='layui-form-label' id='ruleGroupId' style='display: none'>ID：" + data.id + "</label>");
+                    }
+                });
+            } else if(obj.event === 'exe'){
                 layer.confirm('确定执行?', {icon: 3, title:'执行'}, function(index){
                     $.ajax({
                         url: "/ruleGroup/execute",

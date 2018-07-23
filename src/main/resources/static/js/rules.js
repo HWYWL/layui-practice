@@ -13,10 +13,12 @@ function initTable() {
             ,url:'/rules/fidnAll'
             ,cellMinWidth: 20 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             ,cols: [[
-                {field:'id', title: 'id'}
-                ,{field:'ruleName', title: '规则'}
-                ,{field:'gameName', title: '游戏'}
+                {field:'ruleName', title: '规则'}
                 ,{field:'ruleGroupName', title: '规则组'}
+                ,{field:'fromPort', title: '来源端口'}
+                ,{field:'toPort', title: '转发端口'}
+                ,{field:'toIp', title: '转发ip'}
+                ,{field:'agreement', title: '协议'}
                 ,{field:'remark', title: '备注'}
                 ,{field:'crttime', title: '创建时间'}
                 ,{field:'', title: '查看/执行/删除', templet: '#buttonl', unresize: true}
@@ -37,6 +39,22 @@ function initTable() {
                     about:true,
 
                     content: '/rules/detail?id=' + data.id
+                });
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 2,
+                    title: '编辑脚本',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['60%', '65%'],
+                    about:true,
+
+                    content: '/addRules',
+                    success: function (layero, index) {
+                        //传入参数，并赋值给iframe的元素
+                        var body = layer.getChildFrame('body', index);
+                        body.append("<label class='layui-form-label' id='rulesId' style='display: none'>ID：" + data.id + "</label>");
+                    }
                 });
             } else if(obj.event === 'del'){
                 layer.confirm('确定删除?', {icon: 3, title:'删除'}, function(index){
@@ -70,7 +88,7 @@ function initTable() {
                 title: '添加脚本',
                 shadeClose: true,
                 shade: 0.8,
-                area: ['50%', '50%'],
+                area: ['60%', '65%'],
                 about:true,
 
                 content: '/addRules'

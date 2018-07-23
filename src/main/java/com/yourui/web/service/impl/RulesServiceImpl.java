@@ -25,6 +25,7 @@ public class RulesServiceImpl implements RulesService {
         RulesExample example = new RulesExample();
         RulesExample.Criteria criteria = example.createCriteria();
         criteria.andIdIn(ids);
+        criteria.andDelNotEqualTo(Status.RED.getValue());
 
         List<Rules> rules = rulesMapper.selectByExample(example);
 
@@ -37,6 +38,7 @@ public class RulesServiceImpl implements RulesService {
         RulesExample.Criteria criteria = example.createCriteria();
 
         criteria.andRuleGroupIdEqualTo(id);
+        criteria.andDelNotEqualTo(Status.RED.getValue());
 
         return rulesMapper.selectByExample(example);
     }
@@ -52,6 +54,27 @@ public class RulesServiceImpl implements RulesService {
     }
 
     @Override
+    public List<Rules> fidnPort(Long port) {
+        RulesExample example = new RulesExample();
+        RulesExample.Criteria criteria = example.createCriteria();
+
+        criteria.andToPortEqualTo(port);
+
+        return rulesMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<Rules> fidnDifferentPort(Rules rules) {
+        RulesExample example = new RulesExample();
+        RulesExample.Criteria criteria = example.createCriteria();
+
+        criteria.andIdNotEqualTo(rules.getId());
+        criteria.andFromPortEqualTo(rules.getFromPort());
+
+        return rulesMapper.selectByExample(example);
+    }
+
+    @Override
     public Rules selectByPrimaryKey(Long id) {
         return rulesMapper.selectByPrimaryKey(id);
     }
@@ -62,6 +85,11 @@ public class RulesServiceImpl implements RulesService {
         rules.setId(id);
         rules.setDel(Status.RED.getValue());
 
+        return rulesMapper.updateByPrimaryKeySelective(rules);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(Rules rules) {
         return rulesMapper.updateByPrimaryKeySelective(rules);
     }
 

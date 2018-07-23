@@ -28,6 +28,11 @@ public class UserGroup implements Serializable {
     private Long gameId;
 
     /**
+     * 加密秘钥key
+     */
+    private String encryptKey;
+
+    /**
      * 所属该组的网关id
      */
     private String gatewayAddressIds;
@@ -81,6 +86,14 @@ public class UserGroup implements Serializable {
         this.gameId = gameId;
     }
 
+    public String getEncryptKey() {
+        return encryptKey;
+    }
+
+    public void setEncryptKey(String encryptKey) {
+        this.encryptKey = encryptKey;
+    }
+
     public String getGatewayAddressIds() {
         return gatewayAddressIds;
     }
@@ -111,19 +124,5 @@ public class UserGroup implements Serializable {
 
     public void setCrttime(Date crttime) {
         this.crttime = crttime;
-    }
-
-    @Override
-    public String toString() {
-        return "UserGroup{" +
-                "id=" + id +
-                ", userGroupName='" + userGroupName + '\'' +
-                ", ruleGroupIds='" + ruleGroupIds + '\'' +
-                ", gameId=" + gameId +
-                ", gatewayAddressIds='" + gatewayAddressIds + '\'' +
-                ", remark='" + remark + '\'' +
-                ", del=" + del +
-                ", crttime=" + crttime +
-                '}';
     }
 }

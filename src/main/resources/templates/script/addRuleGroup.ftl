@@ -15,6 +15,12 @@
 </fieldset>
 
 <form class="layui-form" action="">
+    <div class="layui-form-item" style="display: none">
+        <div class="layui-input-block">
+            <input type="text" name="id" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
     <div class="layui-form-item">
         <label class="layui-form-label">规则组名称</label>
         <div class="layui-input-block">

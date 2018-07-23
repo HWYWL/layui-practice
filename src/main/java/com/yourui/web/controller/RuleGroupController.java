@@ -1,14 +1,15 @@
 package com.yourui.web.controller;
 
-import cn.hutool.core.util.NetUtil;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.yourui.web.common.Message;
-import com.yourui.web.common.Status;
+import com.yourui.web.common.RespMessage;
 import com.yourui.web.config.Config;
 import com.yourui.web.model.*;
 import com.yourui.web.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/ruleGroup")
 public class RuleGroupController {
+    private static final Logger logger = LoggerFactory.getLogger(RuleGroupController.class);
+
     @Autowired
     RuleGroupService ruleGroupService;
     @Autowired
@@ -35,7 +38,7 @@ public class RuleGroupController {
     @Autowired
     UserGroupService userGroupService;
     @Autowired
-    GameService gameService;
+    CommonService commonService;
 
     /**
      * 获取所有组信息有效数据
@@ -43,16 +46,16 @@ public class RuleGroupController {
      */
     @RequestMapping(value = "/fidnAll", method = RequestMethod.GET)
     @ResponseBody
-    public Message fidnAllGatewayAddress(){
-        Message message = new Message();
+    public RespMessage fidnAllGatewayAddress(){
+        RespMessage respMessage = new RespMessage();
         List<RuleGroup> ruleGroups = ruleGroupService.fidnAll();
         RuleGroup[] scriptInfos = new RuleGroup[ruleGroups.size()];
         RuleGroup[] infos = ruleGroups.toArray(scriptInfos);
 
-        message.setCount(ruleGroups.size());
-        message.setData(infos);
+        respMessage.setCount(ruleGroups.size());
+        respMessage.setData(infos);
 
-        return message;
+        return respMessage;
     }
 
     /**
@@ -64,12 +67,12 @@ public class RuleGroupController {
     @ResponseBody
     public ModelAndView detail(Long id) {
         ModelAndView modelAndView = new ModelAndView("script/code");
-        Message message = new Message();
+        RespMessage respMessage = new RespMessage();
 
         if (id == null){
-            message.setMsg("id为空,更新数据失败!");
-            message.setCode(-1);
-            modelAndView.addObject("message", message);
+            respMessage.setMsg("id为空,更新数据失败!");
+            respMessage.setCode(-1);
+            modelAndView.addObject("message", respMessage);
 
             return modelAndView;
         }
@@ -80,9 +83,9 @@ public class RuleGroupController {
         List<Long> ids = JSONUtil.toList(jsonArray, Long.class);
 
         if (ids == null || ids.size() == 0){
-            message.setMsg("此规则组没有关联网关!");
-            message.setData("此规则组没有关联网关!");
-            modelAndView.addObject("message", message);
+            respMessage.setMsg("此规则组没有关联网关!");
+            respMessage.setData("此规则组没有关联网关!");
+            modelAndView.addObject("message", respMessage);
 
             return modelAndView;
         }
@@ -91,69 +94,81 @@ public class RuleGroupController {
         StringBuffer buffer = new StringBuffer();
         gatewayAddress.forEach(item-> buffer.append(item.getGatewayAddressName() + "\r\n"));
 
-        message.setData(buffer.toString());
+        List<Rules> rules = rulesService.selectByRuleGroupId(id);
 
-        modelAndView.addObject("message", message);
+        for (int i = 0; i < rules.size(); i++) {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("fromPort", rules.get(i).getFromPort());
+            map.put("toPort", rules.get(i).getToPort());
+            map.put("toIp", rules.get(i).getToIp());
+            map.put("规则名称", rules.get(i).getRuleName());
+            map.put("协议", rules.get(i).getAgreement());
+            buffer.append("节点"+ i +":" + map + "\r\n");
+        }
+
+        respMessage.setData(buffer.toString());
+
+        modelAndView.addObject("message", respMessage);
 
         return modelAndView;
     }
 
     /**
+     * 编辑规则组
+     * @param id 规则组id
+     * @return
+     */
+    @RequestMapping(value = "/echo", method = RequestMethod.GET)
+    @ResponseBody
+    public RespMessage echo(Long id) {
+        RespMessage respMessage = new RespMessage();
+        Map<String, Object> map = new HashMap<>(16);
+
+        if (id == null){
+            respMessage.setMsg("id为空,查询数据失败!");
+            respMessage.setCode(-1);
+            logger.info("id为空,查询数据失败!");
+            return respMessage;
+        }
+
+        RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(id);
+
+        // 获得该规则组使用的网关
+        String gatewayAddressIds = ruleGroup.getGatewayAddressIds();
+        JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
+        List<Long> ids = JSONUtil.toList(jsonArray, Long.class);
+        List<GatewayAddress> gatewayAddresses = gatewayAddressService.selectByIds(ids);
+
+        map.put("ruleGroup", ruleGroup);
+        map.put("gatewayAddresses", gatewayAddresses);
+
+        respMessage.setData(map);
+
+        return respMessage;
+    }
+
+    /**
      * 用户组查询可用网关
-     * @param id
+     * @param id 规则组id
      * @return
      */
     @RequestMapping(value = "/detailGatewayAddress", method = RequestMethod.POST)
     @ResponseBody
-    public Message detailGatewayAddress(Long id) {
-        Message message = new Message();
+    public RespMessage detailGatewayAddress(Long id) {
+        RespMessage respMessage = new RespMessage();
 
         if (id == null){
-            message.setMsg("id为空,无可用网关!");
-            message.setCode(-1);
-
-            return message;
+            respMessage.setMsg("id为空,无可用网关!");
+            respMessage.setCode(-1);
+            logger.info("id为空,无可用网关!");
+            return respMessage;
         }
 
-        RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(id);
-        String gatewayAddressIds = ruleGroup.getGatewayAddressIds();
-        JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
-        List<Long> ruleGroupIds = JSONUtil.toList(jsonArray, Long.class);
+        List<GatewayAddress> gatewayAddresses = commonService.detailGatewayAddress(id);
 
-        if (ruleGroupIds == null || ruleGroupIds.size() == 0){
-            message.setMsg("此规则组没有关联规则组!");
-            message.setData("此规则组没有关联规则组!");
+        respMessage.setData(gatewayAddresses);
 
-            return message;
-        }
-
-        List<UserGroup> userGroups = userGroupService.selectByRuleGroupIds(String.valueOf(id));
-        List<GatewayAddress> gatewayAddress = new ArrayList<>();
-        // 去重
-        Set<Long> set = new HashSet<>();
-        if (userGroups != null && userGroups.size() > 0){
-            userGroups.forEach(item-> {
-                String gaIds = item.getGatewayAddressIds();
-                JSONArray array = JSONUtil.parseArray(gaIds);
-                List<Long> ids = JSONUtil.toList(array, Long.class);
-                set.addAll(ids);
-            });
-            ruleGroupIds.removeAll(set);
-        }
-
-        if (ruleGroupIds.size() == 0){
-            message.setMsg("此组没有空余的安全网关!");
-            message.setData(gatewayAddress);
-
-            return message;
-        }
-
-        //获取剩余可用网关
-        gatewayAddress = gatewayAddressService.selectByIds(ruleGroupIds);
-
-        message.setData(gatewayAddress);
-
-        return message;
+        return respMessage;
     }
 
     /**
@@ -163,18 +178,27 @@ public class RuleGroupController {
      */
     @RequestMapping(value = "/delID", method = RequestMethod.POST)
     @ResponseBody
-    public Message delID(Long id){
-        Message message = new Message();
+    public RespMessage delID(Long id){
+        RespMessage respMessage = new RespMessage();
         if (id == null){
-            message.setMsg("id为空,更新数据失败!");
-            message.setCode(-1);
+            respMessage.setMsg("id为空,更新数据失败!");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
-        ruleGroupService.updateById(id);
+        List<Rules> rules = rulesService.selectByRuleGroupId(id);
+        if (rules == null || rules.size() == 0){
+            ruleGroupService.updateById(id);
+        }else {
+            respMessage.setMsg("该规则组还包含规则，不能删除!");
+            respMessage.setCode(-1);
+            logger.info("该规则组还包含规则，不能删除!");
 
-        return message;
+            return respMessage;
+        }
+
+        return respMessage;
     }
 
     /**
@@ -184,8 +208,8 @@ public class RuleGroupController {
      */
     @RequestMapping(value = "/execute", method = RequestMethod.POST)
     @ResponseBody
-    public Message execute(Long id) {
-        Message message = new Message();
+    public RespMessage execute(Long id) {
+        RespMessage respMessage = new RespMessage();
 
         // 获取此规则组的网关地址
         RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(id);
@@ -197,36 +221,31 @@ public class RuleGroupController {
         // 获取规则组对应的规则
         List<Rules> rules = rulesService.selectByRuleGroupId(id);
 
-        // 获取规则组中规则对应的游戏
-        List<Long> gameIdList = new ArrayList<>();
-        rules.forEach(item-> gameIdList.add(item.getGameId()));
-        if (gameIdList == null || gameIdList.size() == 0){
-            message.setData("暂无游戏关联");
-            message.setCode(-1);
-            return message;
-        }
-
-        List<Game> games = gameService.selectByIds(gameIdList);
-
-        List<String> gameIpList = new ArrayList<>();
         List<String> gatewayIpList = new ArrayList<>();
 
-        games.forEach(item-> gameIpList.add(item.getIp()));
-        gatewayAddresses.forEach(item-> gatewayIpList.add(item.getIp()));
+        gatewayAddresses.forEach(item-> gatewayIpList.add(item.getOutsideNetworkIp()));
 
         Map<String, Object> map = new HashMap<>(16);
         map.put("gatewayIp", gatewayIpList);
-        map.put("gameIp", gameIpList);
+        map.put("rules", rules);
 
         try {
             // 把网关ip和游戏ip发送到防御网关
-            HttpUtil.post(Config.ADDRESS_PORT, map, 2000);
+            gatewayAddresses.forEach(item->
+                HttpUtil.createPost(Config.ADDRESS_HTTP + item.getOutsideNetworkIp() + Config.ADDRESS_PORT)
+                    .charset(CharsetUtil.UTF_8)
+                    .timeout(2000)
+                    .setEncodeUrl(false)
+                    .body(JSONUtil.toJsonPrettyStr(map))
+                    .execute());
         }catch (Exception e){
-            message.setCode(-1);
-            message.setData(e.getCause().toString());
+            respMessage.setCode(-1);
+            respMessage.setData(e.getCause().toString());
+            logger.info("把网关ip和游戏ip发送到防御网关:" + e.getCause());
+            e.printStackTrace();
         }
 
-        return message;
+        return respMessage;
     }
 
     /**
@@ -236,20 +255,25 @@ public class RuleGroupController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Message save(String ruleGroup, String items){
-        Message message = new Message();
-        if (items == null && ruleGroup == null){
-            message.setMsg("请选择网关");
-            message.setCode(-1);
+    public RespMessage save(String ruleGroup, String items){
+        RespMessage respMessage = new RespMessage();
+        if (items == null || items.equals("[]") || ruleGroup == null){
+            respMessage.setMsg("请选择网关");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
         RuleGroup group = JSONUtil.toBean(ruleGroup, RuleGroup.class);
         group.setGatewayAddressIds(items);
 
-        ruleGroupService.insertSelective(group);
 
-        return message;
+        if (group.getId() == null){
+            ruleGroupService.insertSelective(group);
+        }else {
+            ruleGroupService.updateByPrimaryKeySelective(group);
+        }
+
+        return respMessage;
     }
 }

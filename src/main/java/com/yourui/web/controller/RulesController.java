@@ -1,13 +1,18 @@
 package com.yourui.web.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.yourui.web.common.Message;
+import com.yourui.web.common.RespMessage;
 import com.yourui.web.common.RulesPlus;
-import com.yourui.web.common.Status;
+import com.yourui.web.config.Config;
 import com.yourui.web.model.*;
 import com.yourui.web.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +31,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/rules")
 public class RulesController {
+    private static final Logger logger = LoggerFactory.getLogger(RulesController.class);
+
     @Autowired
     RulesService rulesService;
     @Autowired
@@ -33,9 +40,9 @@ public class RulesController {
     @Autowired
     RuleGroupService ruleGroupService;
     @Autowired
-    GameService gameService;
-    @Autowired
     UserGroupService userGroupService;
+    @Autowired
+    CommonService commonService;
 
     /**
      * 获取所有游戏有效数据
@@ -43,26 +50,24 @@ public class RulesController {
      */
     @RequestMapping(value = "/fidnAll", method = RequestMethod.GET)
     @ResponseBody
-    public Message fidnAllGatewayAddress(){
-        Message message = new Message();
-        ArrayList<RulesPlus> list = new ArrayList<>();
+    public RespMessage fidnAllGatewayAddress(){
+        RespMessage respMessage = new RespMessage();
+        List<RulesPlus> list = new ArrayList<>();
+
         List<Rules> rulesList = rulesService.fidnAll();
 
         for (Rules rules: rulesList) {
             RulesPlus item = new RulesPlus();
             BeanUtil.copyProperties(rules, item);
-            Long gameId = item.getGameId();
             Long ruleGroupId = item.getRuleGroupId();
-            Game game = gameService.selectByPrimaryKey(gameId);
             RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(ruleGroupId);
-            item.setGameName(game.getGameName());
             item.setRuleGroupName(ruleGroup.getRuleGroupName());
             list.add(item);
         }
 
-        message.setData(list);
+        respMessage.setData(list);
 
-        return message;
+        return respMessage;
     }
 
     /**
@@ -74,7 +79,7 @@ public class RulesController {
     @ResponseBody
     public ModelAndView detail(Long id) {
         ModelAndView modelAndView = new ModelAndView("script/code");
-        Message message = new Message();
+        RespMessage respMessage = new RespMessage();
 
         Rules rules = rulesService.selectByPrimaryKey(id);
         RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(rules.getRuleGroupId());
@@ -87,11 +92,28 @@ public class RulesController {
         StringBuffer buffer = new StringBuffer();
         gatewayAddressesList.forEach(item-> buffer.append(item.getGatewayAddressName() + "\r\n"));
 
-        message.setData(buffer.toString());
+        respMessage.setData(buffer.toString());
 
-        modelAndView.addObject("message", message);
+        modelAndView.addObject("message", respMessage);
 
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/echo", method = RequestMethod.GET)
+    @ResponseBody
+    public RespMessage echo(Long id){
+        RespMessage respMessage = new RespMessage();
+        RulesPlus item = new RulesPlus();
+
+        Rules rules = rulesService.selectByPrimaryKey(id);
+        BeanUtil.copyProperties(rules, item);
+        Long ruleGroupId = item.getRuleGroupId();
+        RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(ruleGroupId);
+        item.setRuleGroupName(ruleGroup.getRuleGroupName());
+
+        respMessage.setData(item);
+
+        return respMessage;
     }
 
     /**
@@ -101,42 +123,102 @@ public class RulesController {
      */
     @RequestMapping(value = "/delID", method = RequestMethod.POST)
     @ResponseBody
-    public Message delID(Long id){
-        Message message = new Message();
+    public RespMessage delID(Long id){
+        RespMessage respMessage = new RespMessage();
         if (id == null){
-            message.setMsg("id为空,更新数据失败!");
-            message.setCode(-1);
+            respMessage.setMsg("id为空,更新数据失败!");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
-        rulesService.updateById(id);
+        Rules rules = rulesService.selectByPrimaryKey(id);
 
-        return message;
+        // 获取规则组
+        RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(rules.getRuleGroupId());
+
+        // 获取规则组下的规则
+        Message message = commonService.findByRuleGroupName(ruleGroup.getRuleGroupName(), rules);
+
+        String gatewayAddressIds = ruleGroup.getGatewayAddressIds();
+        JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
+        List<Long> ids = JSONUtil.toList(jsonArray, Long.class);
+
+        // 获取规则组下的所有网关
+        List<GatewayAddress> gatewayAddresses = gatewayAddressService.selectByIds(ids);
+
+        try {
+            // 把网关ip和游戏ip发送到防御网关
+            for (GatewayAddress item : gatewayAddresses) {
+                // 把网关外网ip和游戏ip发送到防御网关
+                HttpUtil.createPost(Config.ADDRESS_HTTP + item.getOutsideNetworkIp() + Config.ADDRESS_PORT)
+                        .charset(CharsetUtil.UTF_8)
+                        .timeout(2000)
+                        .setEncodeUrl(false)
+                        .body(JSONUtil.toJsonPrettyStr(message))
+                        .execute();
+            }
+        }catch (Exception e){
+            respMessage.setCode(-1);
+            respMessage.setData(e.getCause().toString());
+            logger.info("规则删除：" + e.getCause());
+            e.printStackTrace();
+        }
+
+        // 全服通知成功在再执行更新操作
+        if (respMessage.getCode() == 0){
+            rulesService.updateById(id);
+        }
+
+        return respMessage;
     }
 
     /**
-     * 保存游戏信息
+     * 保存规则信息
      * @param rules
      * @return
      */
     @RequestMapping("/save")
     @ResponseBody
-    public Message save(@RequestBody Rules rules){
-        Message message = new Message();
+    public RespMessage save(@RequestBody Rules rules){
+        RespMessage respMessage = new RespMessage();
         if (rules == null){
-            message.setMsg("请先填写数据,更新数据失败!");
-            message.setCode(-1);
+            respMessage.setMsg("请先填写数据,更新数据失败!");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
-        RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(rules.getRuleGroupId());
-        rules.setRuleGroupId(ruleGroup.getId());
+        if (rules.getId() == null) {
+            List<Rules> fidnPort = rulesService.fidnPort(rules.getToPort());
 
-        rulesService.insertSelective(rules);
+            if (fidnPort != null && fidnPort.size() > 0) {
+                respMessage.setMsg("该端口号已经使用,请选择其他端口号!");
+                respMessage.setCode(-1);
 
-        return message;
+                return respMessage;
+            }
+
+//            RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(rules.getRuleGroupId());
+//            rules.setRuleGroupId(ruleGroup.getId());
+
+            rulesService.insertSelective(rules);
+        }else if (rules.getId() > 0){
+            List<Rules> fidnPort = rulesService.fidnDifferentPort(rules);
+            if (fidnPort.size() != 0){
+                respMessage.setMsg("修改的端口已存在!");
+                respMessage.setCode(-1);
+
+                return respMessage;
+            }
+
+            rulesService.updateByPrimaryKeySelective(rules);
+        }else {
+            respMessage.setMsg("未知错误!");
+            respMessage.setCode(-1);
+        }
+
+        return respMessage;
     }
 
     /**
@@ -145,36 +227,24 @@ public class RulesController {
      */
     @RequestMapping("/fidnNetGroupGateway")
     @ResponseBody
-    public Message fidnNetGroupGateway(){
-        Message message = new Message();
-        HashMap<String, Object> map = new HashMap<>();
+    public RespMessage fidnNetGroupGateway(){
+        RespMessage respMessage = new RespMessage();
+        HashMap<String, Object> map = new HashMap<>(16);
 
         List<GatewayAddress> gatewayAddresses = gatewayAddressService.fidnAll();
         List<RuleGroup> ruleGroups = ruleGroupService.fidnAll();
         List<UserGroup> userGroups = userGroupService.fidnAll();
-        List<Game> games = gameService.fidnAll();
-
-        Set<Long> set = new HashSet<>();
-        List<Long> longs = gatewayAddressService.fidnAllId(Status.GREEN.getValue());
-        ruleGroups.forEach(item-> {
-            String gatewayAddressIds = item.getGatewayAddressIds();
-            JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
-            List<Long> ids = JSONUtil.toList(jsonArray, Long.class);
-            set.addAll(ids);
-        });
-        longs.removeAll(set);
 
         // 获取剩余可用网关
-        List<GatewayAddress> usableGatewayAddresses = gatewayAddressService.selectByIds(longs);
+        List<GatewayAddress> usableGatewayAddresses = commonService.usableGatewayAddresses();
 
         map.put("gatewayAddresses", gatewayAddresses);
         map.put("ruleGroups", ruleGroups);
         map.put("userGroups", userGroups);
-        map.put("games", games);
         map.put("usableGatewayAddresses", usableGatewayAddresses);
 
-        message.setData(map);
+        respMessage.setData(map);
 
-        return message;
+        return respMessage;
     }
 }

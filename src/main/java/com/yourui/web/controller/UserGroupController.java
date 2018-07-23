@@ -1,18 +1,25 @@
 package com.yourui.web.controller;
 
+import cn.hutool.core.util.CharUtil;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.Mode;
+import cn.hutool.crypto.Padding;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.yourui.web.common.Message;
+import com.yourui.web.common.RespMessage;
 import com.yourui.web.config.Config;
-import com.yourui.web.model.Game;
 import com.yourui.web.model.GatewayAddress;
 import com.yourui.web.model.RuleGroup;
 import com.yourui.web.model.UserGroup;
-import com.yourui.web.service.GameService;
-import com.yourui.web.service.GatewayAddressService;
-import com.yourui.web.service.RuleGroupService;
-import com.yourui.web.service.UserGroupService;
+import com.yourui.web.service.*;
+import com.yourui.web.utils.GitUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +37,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/userGroup")
 public class UserGroupController {
+    private static final Logger logger = LoggerFactory.getLogger(UserGroupController.class);
+
     @Autowired
     RuleGroupService ruleGroupService;
     @Autowired
@@ -37,7 +46,9 @@ public class UserGroupController {
     @Autowired
     GatewayAddressService gatewayAddressService;
     @Autowired
-    GameService gameService;
+    RulesService rulesService;
+    @Autowired
+    CommonService commonService;
 
     /**
      * 获取所有组信息有效数据
@@ -45,13 +56,25 @@ public class UserGroupController {
      */
     @RequestMapping(value = "/fidnAll", method = RequestMethod.GET)
     @ResponseBody
-    public Message fidnAllGatewayAddress(){
-        Message message = new Message();
+    public RespMessage fidnAllGatewayAddress(){
+        RespMessage respMessage = new RespMessage();
 
         List<UserGroup> userGroups = userGroupService.fidnAll();
-        message.setData(userGroups);
+        respMessage.setData(userGroups);
 
-        return message;
+        return respMessage;
+    }
+
+    /**
+     * 获取服务器转发规则,此接口用于go网关启动获取
+     * @param ip 网关内网ip
+     * @return
+     */
+    @RequestMapping(value = "/findByRuleGroup", method = RequestMethod.POST)
+    @ResponseBody
+    public RespMessage findByRuleGroup(String ip){
+
+        return commonService.findByRuleGroupIP(ip);
     }
 
     /**
@@ -63,12 +86,12 @@ public class UserGroupController {
     @ResponseBody
     public ModelAndView detail(Long id) {
         ModelAndView modelAndView = new ModelAndView("script/code");
-        Message message = new Message();
+        RespMessage respMessage = new RespMessage();
 
         if (id == null){
-            message.setMsg("id为空,查询数据失败!");
-            message.setCode(-1);
-            modelAndView.addObject("message", message);
+            respMessage.setMsg("id为空,查询数据失败!");
+            respMessage.setCode(-1);
+            modelAndView.addObject("message", respMessage);
 
             return modelAndView;
         }
@@ -76,9 +99,9 @@ public class UserGroupController {
         UserGroup userGroup = userGroupService.selectByPrimaryKey(id);
         String ruleGroupIds = userGroup.getRuleGroupIds();
         if(ruleGroupIds == null || ruleGroupIds.isEmpty()){
-            message.setMsg("规则组不存在!");
-            message.setCode(-1);
-            modelAndView.addObject("message", message);
+            respMessage.setMsg("规则组不存在!");
+            respMessage.setCode(-1);
+            modelAndView.addObject("message", respMessage);
 
             return modelAndView;
         }
@@ -93,9 +116,9 @@ public class UserGroupController {
         List<Long> ids = JSONUtil.toList(jsonArray, Long.class);
 
         if (ids == null || ids.size() == 0){
-            message.setMsg("此规则组没有关联网关!");
-            message.setData("此规则组没有关联网关!");
-            modelAndView.addObject("message", message);
+            respMessage.setMsg("此规则组没有关联网关!");
+            respMessage.setData("此规则组没有关联网关!");
+            modelAndView.addObject("message", respMessage);
 
             return modelAndView;
         }
@@ -104,16 +127,52 @@ public class UserGroupController {
 
         // 获取网关信息
         gatewayAddress.forEach(item-> buffer.append(item.getGatewayAddressName() + "\r\n"));
+        buffer.append("key:" + userGroup.getEncryptKey() + "\r\n\n");
 
-        // 获取所属游戏
-        Game game = gameService.selectByPrimaryKey(userGroup.getGameId());
-        buffer.append("所属游戏名称:" + game.getGameName());
+        StringBuffer path = new StringBuffer();
+        path.append(Config.GIT_FILEPATH);
+        path.append(CharUtil.SLASH);
+        path.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
+        path.append(CharUtil.SLASH);
+        path.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
+        buffer.append("下载地址:" + path.toString() + "\r\n\n");
 
-        message.setData(buffer.toString());
+        respMessage.setData(buffer.toString());
 
-        modelAndView.addObject("message", message);
+        modelAndView.addObject("message", respMessage);
 
         return modelAndView;
+    }
+
+    /**
+     * 查看规则组包含的信息
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/echo", method = RequestMethod.GET)
+    @ResponseBody
+    public RespMessage echo(Long id) {
+        RespMessage respMessage = new RespMessage();
+        Map<String, Object> map = new HashMap<>(16);
+        UserGroup userGroup = userGroupService.selectByPrimaryKey(id);
+        String ruleGroupIds = userGroup.getRuleGroupIds();
+        // 可用网关
+        List<GatewayAddress> usableGatewayAddresses = commonService.detailGatewayAddress(Long.valueOf(ruleGroupIds));
+
+        String gatewayAddressIds = userGroup.getGatewayAddressIds();
+        JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
+        List<Long> ids = JSONUtil.toList(jsonArray, Long.class);
+
+        // 已用网关
+        List<GatewayAddress> usedGatewayAddresses = gatewayAddressService.selectByIds(ids);
+
+        map.put("usableGatewayAddresses", usableGatewayAddresses);
+        map.put("usedGatewayAddresses", usedGatewayAddresses);
+        map.put("userGroup", userGroup);
+
+        respMessage.setData(map);
+
+        return respMessage;
     }
 
     /**
@@ -123,18 +182,18 @@ public class UserGroupController {
      */
     @RequestMapping(value = "/delID", method = RequestMethod.POST)
     @ResponseBody
-    public Message delID(Long id){
-        Message message = new Message();
+    public RespMessage delID(Long id){
+        RespMessage respMessage = new RespMessage();
         if (id == null){
-            message.setMsg("id为空,更新数据失败!");
-            message.setCode(-1);
+            respMessage.setMsg("id为空,更新数据失败!");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
         }
 
         userGroupService.updateById(id);
 
-        return message;
+        return respMessage;
     }
 
     /**
@@ -144,22 +203,68 @@ public class UserGroupController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Message save(String userGroup, String items){
-        Message message = new Message();
+    public RespMessage save(String userGroup, String items){
+        RespMessage respMessage = new RespMessage();
 
-        if (userGroup == null || items == null){
-            message.setMsg("请选择规则组");
-            message.setCode(-1);
+        if (StrUtil.isBlank(userGroup)){
+            respMessage.setMsg("请选择规则组");
+            respMessage.setCode(-1);
 
-            return message;
+            return respMessage;
+        }
+
+        if (StrUtil.isBlank(items) || items.equals("[]")){
+            respMessage.setMsg("防御网关不存在,请选择有防御网关的规则组!");
+            respMessage.setCode(-1);
+            logger.info("防御网关不存在,请选择有防御网关的规则组!");
+
+            return respMessage;
         }
 
         UserGroup group = JSONUtil.toBean(userGroup, UserGroup.class);
         group.setGatewayAddressIds(items);
 
-        userGroupService.insertSelective(group);
+        // 获取规则组所对应的网关信息
+        JSONArray gatewayAddressIdsArray = JSONUtil.parseArray(items);
+        List<Long> longs = JSONUtil.toList(gatewayAddressIdsArray, Long.class);
+        List<GatewayAddress> gatewayAddresses = gatewayAddressService.selectByIds(longs);
+        String jsonStr = JSONUtil.toJsonStr(gatewayAddresses);
 
-        return message;
+        // 生成密钥
+        String key;
+        if (group.getId() == null){
+            key = RandomUtil.randomString(16);
+        }else {
+            UserGroup ug = userGroupService.selectByPrimaryKey(group.getId());
+            key = ug.getEncryptKey();
+        }
+
+        AES aes = new AES(Mode.ECB, Padding.PKCS5Padding, key.getBytes());
+
+        // 加密
+        String encrypt = aes.encryptHex(jsonStr);
+
+        String decrypt = aes.decryptStr(encrypt);
+
+        System.out.println("加密数据：" + encrypt);
+        System.out.println("解密数据：" + decrypt);
+        System.out.println("key：" + key);
+
+        group.setEncryptKey(key);
+        try {
+            // 把生成的文件push到git
+            GitUtil.commitFiles(group.getUserGroupName(), encrypt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (group.getId() == null) {
+            userGroupService.insertSelective(group);
+        }else {
+            userGroupService.updateByPrimaryKeySelective(group);
+        }
+
+        return respMessage;
     }
 
     /**
@@ -169,18 +274,19 @@ public class UserGroupController {
      */
     @RequestMapping(value = "/execute", method = RequestMethod.POST)
     @ResponseBody
-    public Message execute(Long id){
-        Message message = new Message();
+    public RespMessage execute(Long id){
+        RespMessage respMessage = new RespMessage();
 
         UserGroup userGroup = userGroupService.selectByPrimaryKey(id);
 
         // 获取网关IP地址
         String gatewayAddressIds = userGroup.getGatewayAddressIds();
         if (gatewayAddressIds == null || gatewayAddressIds.length() == 0){
-            message.setCode(-1);
-            message.setData("网关IP不存在");
+            respMessage.setCode(-1);
+            respMessage.setData("网关IP不存在");
+            logger.info("网关IP不存在");
 
-            return message;
+            return respMessage;
         }
 
         JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
@@ -189,29 +295,33 @@ public class UserGroupController {
 
         List<String> arrayList = new ArrayList<>();
 
-        gatewayAddresses.forEach(item -> arrayList.add(item.getIp()));
+        gatewayAddresses.forEach(item -> arrayList.add(item.getOutsideNetworkIp()));
 
         // 获取一个随机网关IP用于游戏
         Random random = new Random();
         String ip = arrayList.get(random.nextInt(arrayList.size()));
 
-        Long gameId = userGroup.getGameId();
-        Game game = gameService.selectByPrimaryKey(gameId);
-
         Map<String, Object> map = new HashMap<>(16);
         map.put("gatewayIp", ip);
-        map.put("gameIp", game.getIp());
 
         try {
             // 把网关ip和游戏ip发送到防御网关
-            HttpUtil.post(Config.ADDRESS_PORT, map, 2000);
-            message.setData("执行成功");
+            gatewayAddresses.forEach(item->
+                    HttpUtil.createPost(Config.ADDRESS_HTTP + item.getOutsideNetworkIp() + Config.ADDRESS_PORT)
+                            .charset(CharsetUtil.UTF_8)
+                            .timeout(2000)
+                            .setEncodeUrl(false)
+                            .body(JSONUtil.toJsonPrettyStr(map))
+                            .execute());
+            respMessage.setData("执行成功");
         }catch (Exception e){
-            message.setCode(-1);
-            message.setData(e.getCause().toString());
+            respMessage.setCode(-1);
+            respMessage.setData(e.getCause().toString());
+            logger.info("用户组把网关ip和游戏ip发送到防御网关：" + e.getCause());
+            e.printStackTrace();
         }
 
-        return message;
+        return respMessage;
     }
 
 }

@@ -13,9 +13,14 @@ public class GatewayAddress implements Serializable {
     private Long id;
 
     /**
-     * 网关ip地址
+     * 网关内网ip地址
      */
-    private String ip;
+    private String internalNetworkIp;
+
+    /**
+     * 网关外网ip地址
+     */
+    private String outsideNetworkIp;
 
     /**
      * 网关服务器名称
@@ -47,12 +52,20 @@ public class GatewayAddress implements Serializable {
         this.id = id;
     }
 
-    public String getIp() {
-        return ip;
+    public String getInternalNetworkIp() {
+        return internalNetworkIp;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setInternalNetworkIp(String internalNetworkIp) {
+        this.internalNetworkIp = internalNetworkIp;
+    }
+
+    public String getOutsideNetworkIp() {
+        return outsideNetworkIp;
+    }
+
+    public void setOutsideNetworkIp(String outsideNetworkIp) {
+        this.outsideNetworkIp = outsideNetworkIp;
     }
 
     public String getGatewayAddressName() {
@@ -91,7 +104,8 @@ public class GatewayAddress implements Serializable {
     public String toString() {
         return "GatewayAddress{" +
                 "id=" + id +
-                ", ip='" + ip + '\'' +
+                ", internalNetworkIp='" + internalNetworkIp + '\'' +
+                ", outsideNetworkIp='" + outsideNetworkIp + '\'' +
                 ", gatewayAddressName='" + gatewayAddressName + '\'' +
                 ", remark='" + remark + '\'' +
                 ", del=" + del +
