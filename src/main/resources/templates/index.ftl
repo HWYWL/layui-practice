@@ -38,6 +38,8 @@
             <i class="layui-icon">&#xe60a;</i>查看</a>
         <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
             <i class="layui-icon">&#xe642;</i>编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="exe">
+            <i class="layui-icon">&#xe623;</i>执行</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
             <i class="layui-icon">&#xe640;</i>删除</a>
     </script>

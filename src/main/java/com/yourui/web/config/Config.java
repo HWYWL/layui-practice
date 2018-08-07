@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * 配置
@@ -19,8 +18,17 @@ import java.net.URISyntaxException;
  */
 @Configuration
 @MapperScan(basePackages = {"com.yourui.web.dao"})
-@PropertySource("classpath:config/config.properties")
+@PropertySource({
+        "classpath:config/config-dev.properties",
+        "classpath:config/config-prod.properties",
+        "classpath:application.properties"
+})
 public class Config {
+
+    /**
+     * 环境（开发或者生产）
+     */
+    public static String SPRING_PROFILES_ACTIVE;
 
     /**
      * redis key
@@ -40,35 +48,124 @@ public class Config {
     public static String ADDRESS_HTTPS;
 
     /**
-     * 远程库路径
+     * 远程库路径 开发
      */
-    public static String GIT_REMOTEPATH;
+    public static String GITEE_DEV_REMOTEPATH;
 
     /**
-     * 文件地址前缀路径
+     * 文件地址前缀路径 开发
      */
-    public static String GIT_FILEPATH;
+    public static String GITEE_DEV_FILEPATH;
     /**
-     * 下载已有仓库到本地路径
+     * 下载已有仓库到本地路径 开发
      */
-    public static String GIT_LOCALPATH;
+    public static String GITEE_DEV_LOCALPATH;
     /**
-     * 远程服务器上的用户名
+     * 远程服务器上的用户名 开发
      */
-    public static String GIT_USERNAME;
+    public static String GITEE_DEV_USERNAME;
     /**
-     * 远程服务器上的密码
+     * 远程服务器上的密码 开发
      */
-    public static String GIT_PASSWORD;
+    public static String GITEE_DEV_PASSWORD;
 
     /**
-     * 初始化git仓库
+     * 远程库路径 开发
+     */
+    public static String GITHUB_DEV_REMOTEPATH;
+    /**
+     * 文件地址前缀路径 开发
+     */
+    public static String GITHUB_DEV_FILEPATH;
+    /**
+     * 下载已有仓库到本地路径 开发
+     */
+    public static String GITHUB_DEV_LOCALPATH;
+    /**
+     * 远程服务器上的用户名 开发
+     */
+    public static String GITHUB_DEV_USERNAME;
+    /**
+     * 远程服务器上的密码 开发
+     */
+    public static String GITHUB_DEV_PASSWORD;
+
+    /**
+     * 远程库路径 正式
+     */
+    public static String GITEE_PROD_REMOTEPATH;
+
+    /**
+     * 文件地址前缀路径 正式
+     */
+    public static String GITEE_PROD_FILEPATH;
+    /**
+     * 下载已有仓库到本地路径 正式
+     */
+    public static String GITEE_PROD_LOCALPATH;
+    /**
+     * 远程服务器上的用户名 正式
+     */
+    public static String GITEE_PROD_USERNAME;
+    /**
+     * 远程服务器上的密码 正式
+     */
+    public static String GITEE_PROD_PASSWORD;
+
+    /**
+     * 远程库路径 正式
+     */
+    public static String GITHUB_PROD_REMOTEPATH;
+
+    /**
+     * 文件地址前缀路径 正式
+     */
+    public static String GITHUB_PROD_FILEPATH;
+    /**
+     * 下载已有仓库到本地路径 正式
+     */
+    public static String GITHUB_PROD_LOCALPATH;
+    /**
+     * 远程服务器上的用户名 正式
+     */
+    public static String GITHUB_PROD_USERNAME;
+    /**
+     * 远程服务器上的密码 正式
+     */
+    public static String GITHUB_PROD_PASSWORD;
+
+    /**
+     * 初始化gitee仓库
      * @return
      * @throws GitAPIException
      */
     @Bean
-    public Git initGit() throws GitAPIException, IOException {
-        return GitUtil.gitClone(GIT_LOCALPATH, GIT_REMOTEPATH, GIT_USERNAME, GIT_PASSWORD);
+    public Git initGitee() throws GitAPIException, IOException {
+        Git git;
+        if (GITEE_DEV_REMOTEPATH != null && "prod".equals(GITEE_DEV_REMOTEPATH)){
+            git = GitUtil.gitClone(GITEE_PROD_LOCALPATH, GITEE_PROD_REMOTEPATH, GITEE_PROD_USERNAME, GITEE_PROD_PASSWORD);
+        }else {
+            git = GitUtil.gitClone(GITEE_DEV_LOCALPATH, GITEE_DEV_REMOTEPATH, GITEE_DEV_USERNAME, GITEE_DEV_PASSWORD);
+        }
+
+        return git;
+    }
+
+    /**
+     * 初始化gitee仓库
+     * @return
+     * @throws GitAPIException
+     */
+    @Bean
+    public Git initGithub() throws GitAPIException, IOException {
+        Git git;
+        if (GITEE_DEV_REMOTEPATH != null && "prod".equals(GITEE_DEV_REMOTEPATH)){
+            git = GitUtil.gitClone(GITHUB_PROD_LOCALPATH, GITHUB_PROD_REMOTEPATH, GITHUB_PROD_USERNAME, GITHUB_PROD_PASSWORD);
+        }else {
+            git = GitUtil.gitClone(GITHUB_DEV_LOCALPATH, GITHUB_DEV_REMOTEPATH, GITHUB_DEV_USERNAME, GITHUB_DEV_PASSWORD);
+        }
+
+        return git;
     }
 
     @Value("${post.address.port}")
@@ -86,28 +183,108 @@ public class Config {
         ADDRESS_HTTPS = addressHttps;
     }
 
-    @Value("${git.remote.path}")
-    public void setGitRemotepath(String gitRemotepath) {
-        GIT_REMOTEPATH = gitRemotepath;
+    @Value("${spring.profiles.active}")
+    public void setSpringProfilesActive(String springProfilesActive) {
+        SPRING_PROFILES_ACTIVE = springProfilesActive;
     }
 
-    @Value("${git.file.path}")
-    public void setGitFilepath(String gitFilepath) {
-        GIT_FILEPATH = gitFilepath;
+    @Value("${gitee.dev.remote.path}")
+    public void setGiteeDevRemotepath(String giteeDevRemotepath) {
+        GITEE_DEV_REMOTEPATH = giteeDevRemotepath;
     }
 
-    @Value("${git.local.path}")
-    public void setGitLocalpath(String gitLocalpath) {
-        GIT_LOCALPATH = gitLocalpath;
+    @Value("${gitee.dev.file.path}")
+    public void setGiteeDevFilepath(String giteeDevFilepath) {
+        GITEE_DEV_FILEPATH = giteeDevFilepath;
     }
 
-    @Value("${git.username}")
-    public void setGitUsername(String gitUsername) {
-        GIT_USERNAME = gitUsername;
+    @Value("${gitee.dev.local.path}")
+    public void setGiteeDevLocalpath(String giteeDevLocalpath) {
+        GITEE_DEV_LOCALPATH = giteeDevLocalpath;
     }
 
-    @Value("${git.passworld}")
-    public void setGitPassword(String gitPassword) {
-        GIT_PASSWORD = gitPassword;
+    @Value("${gitee.dev.username}")
+    public void setGiteeDevUsername(String giteeDevUsername) {
+        GITEE_DEV_USERNAME = giteeDevUsername;
+    }
+
+    @Value("${gitee.dev.passworld}")
+    public void setGiteeDevPassword(String giteeDevPassword) {
+        GITEE_DEV_PASSWORD = giteeDevPassword;
+    }
+
+    @Value("${gitee.prod.remote.path}")
+    public void setGiteeProdRemotepath(String giteeProdRemotepath) {
+        GITEE_PROD_REMOTEPATH = giteeProdRemotepath;
+    }
+
+    @Value("${gitee.prod.file.path}")
+    public void setGiteeProdFilepath(String giteeProdFilepath) {
+        GITEE_PROD_FILEPATH = giteeProdFilepath;
+    }
+
+    @Value("${gitee.prod.local.path}")
+    public void setGiteeProdLocalpath(String giteeProdLocalpath) {
+        GITEE_PROD_LOCALPATH = giteeProdLocalpath;
+    }
+
+    @Value("${gitee.prod.username}")
+    public void setGiteeProdUsername(String giteeProdUsername) {
+        GITEE_PROD_USERNAME = giteeProdUsername;
+    }
+
+    @Value("${gitee.prod.passworld}")
+    public void setGiteeProdPassword(String giteeProdPassword) {
+        GITEE_PROD_PASSWORD = giteeProdPassword;
+    }
+
+    @Value("${github.dev.remote.path}")
+    public void setGithubDevRemotepath(String githubDevRemotepath) {
+        GITHUB_DEV_REMOTEPATH = githubDevRemotepath;
+    }
+
+    @Value("${github.dev.file.path}")
+    public void setGithubDevFilepath(String githubDevFilepath) {
+        GITHUB_DEV_FILEPATH = githubDevFilepath;
+    }
+
+    @Value("${github.dev.local.path}")
+    public void setGithubDevLocalpath(String githubDevLocalpath) {
+        GITHUB_DEV_LOCALPATH = githubDevLocalpath;
+    }
+
+    @Value("${github.dev.username}")
+    public void setGithubDevUsername(String githubDevUsername) {
+        GITHUB_DEV_USERNAME = githubDevUsername;
+    }
+
+    @Value("${github.dev.passworld}")
+    public void setGithubDevPassword(String githubDevPassword) {
+        GITHUB_DEV_PASSWORD = githubDevPassword;
+    }
+
+    @Value("${github.prod.remote.path}")
+    public void setGithubProdRemotepath(String githubProdRemotepath) {
+        GITHUB_PROD_REMOTEPATH = githubProdRemotepath;
+    }
+
+    @Value("${github.prod.file.path}")
+    public void setGithubProdFilepath(String githubProdFilepath) {
+        GITHUB_PROD_FILEPATH = githubProdFilepath;
+    }
+
+    @Value("${github.prod.local.path}")
+    public void setGithubProdLocalpath(String githubProdLocalpath) {
+        GITHUB_PROD_LOCALPATH = githubProdLocalpath;
+    }
+
+    @Value("${github.prod.username}")
+    public void setGithubProdUsername(String githubProdUsername) {
+        GITHUB_PROD_USERNAME = githubProdUsername;
+    }
+
+    @Value("${github.prod.passworld}")
+    public void setGithubProdPassword(String githubProdPassword) {
+        GITHUB_PROD_PASSWORD = githubProdPassword;
     }
 }

@@ -122,6 +122,8 @@ layui.config({
             var userGroup = JSON.stringify(data.field);
 
             layer.confirm('确定提交?', {icon: 3, title:'提交'}, function(index){
+                layer.close(index);
+                var load = layer.load(1);
                 $.ajax({
                     type:"post",
                     url:"/userGroup/save",
@@ -131,21 +133,19 @@ layui.config({
                     // contentType: "application/json",
                     success:function(result){
                         if(result.code == 0){
-                            layer.load(1,{time: 1000});
-                            setTimeout(function(){
-                                layer.msg(result.msg,{icon:1});
-                            },1000);
-
-                            setTimeout(function(){
-                                parent.layer.close(index);
-                                window.parent.location.reload();
-                            },3000);
-                        }else {
-                            layer.load(1,{time: 1000});
-                            setTimeout(function(){
-                                layer.msg(result.msg,{icon:5});
-                            },1000);
+                            layer.close(index);
+                            layer.close(load);
+                            layer.msg("执行成功", {icon: 6});
+                        }else{
+                            layer.close(index);
+                            layer.close(load);
+                            layer.msg(data.msg, {icon: 4});
                         }
+
+                        setTimeout(function(){
+                            parent.layer.close(index);
+                            window.parent.location.reload();
+                        },3000);
                     }
                 });
             });
@@ -219,9 +219,11 @@ layui.config({
                     $("#userRuleGroups")[0].innerHTML = "";
                     $("#userRuleGroups")[0].innerText = "";
                     var usableGatewayAddresses = data.data;
-                    // 可用网关
-                    for (var i = 0; i < usableGatewayAddresses.length;i++){
-                        $("#userRuleGroups").append("<input type='checkbox' name='gatewayAddress'  value="+ usableGatewayAddresses[i].id +" title="+ usableGatewayAddresses[i].gatewayAddressName +">");
+                    if (usableGatewayAddresses != null) {
+                        // 可用网关
+                        for (var i = 0; i < usableGatewayAddresses.length; i++) {
+                            $("#userRuleGroups").append("<input type='checkbox' name='gatewayAddress'  value=" + usableGatewayAddresses[i].id + " title=" + usableGatewayAddresses[i].gatewayAddressName + ">");
+                        }
                     }
 
                     form.render();

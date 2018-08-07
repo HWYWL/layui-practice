@@ -164,7 +164,8 @@ public class RuleGroupController {
             return respMessage;
         }
 
-        List<GatewayAddress> gatewayAddresses = commonService.detailGatewayAddress(id);
+        // 获取该用户组所对应的所有网关（已删除的除外）
+        List<GatewayAddress> gatewayAddresses = commonService.accessGroupGatewayAddress(id);
 
         respMessage.setData(gatewayAddresses);
 

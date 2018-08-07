@@ -170,6 +170,23 @@ public class CommonServiceImpl implements CommonService {
         return gatewayAddressService.selectByIds(ruleGroupIds);
     }
 
+    @Override
+    public List<GatewayAddress> accessGroupGatewayAddress(Long id) {
+        RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(id);
+        String gatewayAddressIds = ruleGroup.getGatewayAddressIds();
+        JSONArray jsonArray = JSONUtil.parseArray(gatewayAddressIds);
+        List<Long> ruleGroupIds = JSONUtil.toList(jsonArray, Long.class);
+
+        if (ruleGroupIds == null || ruleGroupIds.size() == 0){
+            // 此规则组没有关联规则组
+
+            return null;
+        }
+
+        //获取剩余可用网关
+        return gatewayAddressService.selectByIds(ruleGroupIds);
+    }
+
     public List findByRuleMap(List<RuleGroup> ruleGroups, Rules rules) {
         RuleGroup ruleGroup = ruleGroups.get(0);
         List<Rules> rulesList = rulesService.selectByRuleGroupId(ruleGroup.getId());

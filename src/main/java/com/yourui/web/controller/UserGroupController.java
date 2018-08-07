@@ -129,13 +129,21 @@ public class UserGroupController {
         gatewayAddress.forEach(item-> buffer.append(item.getGatewayAddressName() + "\r\n"));
         buffer.append("key:" + userGroup.getEncryptKey() + "\r\n\n");
 
-        StringBuffer path = new StringBuffer();
-        path.append(Config.GIT_FILEPATH);
-        path.append(CharUtil.SLASH);
-        path.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
-        path.append(CharUtil.SLASH);
-        path.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
-        buffer.append("下载地址:" + path.toString() + "\r\n\n");
+        StringBuffer giteePath = new StringBuffer();
+        giteePath.append(GitUtil.gitFilePath(Config.GITEE_PROD_LOCALPATH));
+        giteePath.append(CharUtil.SLASH);
+        giteePath.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
+        giteePath.append(CharUtil.SLASH);
+        giteePath.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
+        buffer.append("下载地址:" + giteePath.toString() + "\r\n\n");
+
+        StringBuffer githubPath = new StringBuffer();
+        githubPath.append(GitUtil.gitFilePath(Config.GITHUB_PROD_LOCALPATH));
+        githubPath.append(CharUtil.SLASH);
+        githubPath.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
+        githubPath.append(CharUtil.SLASH);
+        githubPath.append(DigestUtil.md5Hex(userGroup.getUserGroupName()));
+        buffer.append("下载地址:" + githubPath.toString() + "\r\n\n");
 
         respMessage.setData(buffer.toString());
 
@@ -253,8 +261,11 @@ public class UserGroupController {
         group.setEncryptKey(key);
         try {
             // 把生成的文件push到git
-            GitUtil.commitFiles(group.getUserGroupName(), encrypt);
+            GitUtil.commitFiles(Config.GITEE_PROD_LOCALPATH, group.getUserGroupName(), encrypt);
+            GitUtil.commitFiles(Config.GITHUB_PROD_LOCALPATH, group.getUserGroupName(), encrypt);
         } catch (Exception e) {
+            respMessage.setCode(-1);
+            respMessage.setData(e.getCause().toString());
             e.printStackTrace();
         }
 

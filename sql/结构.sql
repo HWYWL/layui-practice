@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : sg
-Source Server Version : 50722
-Source Host           : 10.80.246.253:3306
+Source Server         : mysql
+Source Server Version : 50720
+Source Host           : localhost:3306
 Source Database       : sg
 
 Target Server Type    : MYSQL
-Target Server Version : 50722
+Target Server Version : 50720
 File Encoding         : 65001
 
-Date: 2018-07-20 16:24:17
+Date: 2018-07-30 10:45:18
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,7 +28,7 @@ CREATE TABLE `gateway_address` (
   `del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0：正常使用、-1：已被删除',
   `crtTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='网关服务器地址';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='网关服务器地址';
 
 -- ----------------------------
 -- Table structure for rule_group
@@ -56,15 +56,15 @@ CREATE TABLE `rules` (
   `to_ip` varchar(255) DEFAULT NULL COMMENT '转发地址',
   `rule_name` varchar(255) DEFAULT NULL COMMENT '规则名称',
   `agreement` varchar(100) DEFAULT NULL COMMENT '协议',
-  `max_concurrent_conn` varchar(100) DEFAULT NULL COMMENT '代理最大并发连接数',
-  `max_concurrent_conn_per_ip` varchar(100) DEFAULT NULL COMMENT '每个ip最大并发连接数',
-  `max_new_conn_per_min_per_ip` varchar(100) DEFAULT NULL COMMENT '每个ip每分钟最大新建连接数',
-  `rev_first_pkg_timeout_mills` varchar(100) DEFAULT NULL COMMENT '首包超时毫秒数',
+  `max_concurrent_conn` varchar(100) DEFAULT '0' COMMENT '代理最大并发连接数',
+  `max_concurrent_conn_per_ip` varchar(100) DEFAULT '0' COMMENT '每个ip最大并发连接数',
+  `max_new_conn_per_min_per_ip` varchar(100) DEFAULT '0' COMMENT '每个ip每分钟最大新建连接数',
+  `rev_first_pkg_timeout_mills` varchar(100) DEFAULT '0' COMMENT '首包超时毫秒数',
   `remark` varchar(255) DEFAULT NULL COMMENT '备注',
   `del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0：正常使用、-1：已被删除',
   `crtTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='规则表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='规则表';
 
 -- ----------------------------
 -- Table structure for user_group
@@ -81,7 +81,7 @@ CREATE TABLE `user_group` (
   `del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0：正常使用、-1：已被删除',
   `crtTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='用户组';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='用户组';
 
 -- ----------------------------
 -- Table structure for users

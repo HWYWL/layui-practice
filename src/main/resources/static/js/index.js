@@ -73,6 +73,28 @@ function initTable() {
 
                     });
                 });
+            } else if(obj.event === 'exe'){
+                layer.confirm('确定更新git数据?', {icon: 3, title:'执行'}, function(index){
+                    var load = layer.load(2);
+                    $.ajax({
+                        url: "/gatewayAddress/execute",
+                        type: "POST",
+                        data : {"id":data.id},
+                        async : true,
+                        success: function(data){
+                            if(data.code == 0){
+                                layer.close(index);
+                                layer.close(load);
+                                layer.msg("执行成功", {icon: 6});
+                            }else{
+                                layer.close(index);
+                                layer.close(load);
+                                layer.msg(data.msg, {icon: 4});
+                            }
+                        }
+
+                    });
+                });
             }
         });
 
@@ -100,7 +122,7 @@ function initTable() {
 
 //更改状态
 function updateStatus(obj){
-    layer.load(1,{time: 2*1000});
+    var load = layer.load(2);
     var newStatus = obj.elem.checked?0:-1;
     var id = obj.elem.value;
     var scriptInfo = '{"id":"'+id+'",'+'"enable":"'+newStatus+'"}';
@@ -113,9 +135,11 @@ function updateStatus(obj){
         contentType: "application/json",
         success: function(data){
             layer.closeAll('loading');
+            layer.closeAll(load);
             if(data.code==0){
                 layer.msg(data.msg,{icon: 1});
             }else{
+                layer.closeAll(load);
                 layer.msg(data.msg,{icon: 2});
             }
         }

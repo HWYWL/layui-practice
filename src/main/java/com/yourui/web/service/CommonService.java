@@ -54,4 +54,11 @@ public interface CommonService {
      * @return
      */
     List<GatewayAddress> detailGatewayAddress(Long id);
+
+    /**
+     * 获取该用户组所对应的所有网关（已删除的除外）
+     * @param id 规则组id
+     * @return
+     */
+    List<GatewayAddress> accessGroupGatewayAddress(Long id);
 }

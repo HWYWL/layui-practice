@@ -117,7 +117,7 @@ function initTable() {
 
 //更改状态
 function updateStatus(obj){
-    layer.load(1,{time: 2*1000});
+    var load = layer.load(2);
     var newStatus = obj.elem.checked?0:-1;
     var id = obj.elem.value;
     var scriptInfo = '{"id":"'+id+'",'+'"enable":"'+newStatus+'"}';
@@ -130,6 +130,7 @@ function updateStatus(obj){
         contentType: "application/json",
         success: function(data){
             layer.closeAll('loading');
+            layer.closeAll(load);
             if(data.code==0){
                 layer.msg(data.msg,{icon: 1});
             }else{

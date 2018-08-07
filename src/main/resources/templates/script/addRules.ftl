@@ -79,13 +79,13 @@
         <div class="layui-inline">
             <label class="layui-form-label">代理最大并发连接数</label>
             <div class="layui-input-inline">
-                <input type="text" name="maxConcurrentConn" lay-verify="required" placeholder="请输入,例如500" autocomplete="off" class="layui-input">
+                <input type="text" name="maxConcurrentConn" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
             <label class="layui-form-label">每个ip最大并发连接数</label>
             <div class="layui-input-inline">
-                <input type="text" name="maxConcurrentConnPerIp" lay-verify="required" placeholder="请输入,例如10" autocomplete="off" class="layui-input">
+                <input type="text" name="maxConcurrentConnPerIp" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
             </div>
         </div>
     </div>
@@ -94,13 +94,13 @@
         <div class="layui-inline">
             <label class="layui-form-label">每个ip每分钟最大新建连接数</label>
             <div class="layui-input-inline">
-                <input type="text" name="maxNewConnPerMinPerIp" lay-verify="required" placeholder="请输入,例如10" autocomplete="off" class="layui-input">
+                <input type="text" name="maxNewConnPerMinPerIp" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
             <label class="layui-form-label">首包超时毫秒数</label>
             <div class="layui-input-inline">
-                <input type="text" name="revFirstPkgTimeoutMills" lay-verify="required" placeholder="请输入,例如2000" autocomplete="off" class="layui-input">
+                <input type="text" name="revFirstPkgTimeoutMills" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
             </div>
         </div>
     </div>

@@ -2,6 +2,7 @@ package com.yourui.web.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -201,6 +202,11 @@ public class RulesController {
 
 //            RuleGroup ruleGroup = ruleGroupService.selectByPrimaryKey(rules.getRuleGroupId());
 //            rules.setRuleGroupId(ruleGroup.getId());
+
+            if (StrUtil.isBlank(rules.getMaxConcurrentConn())) rules.setMaxConcurrentConn("0");
+            if (StrUtil.isBlank(rules.getMaxConcurrentConnPerIp())) rules.setMaxConcurrentConnPerIp("0");
+            if (StrUtil.isBlank(rules.getMaxNewConnPerMinPerIp())) rules.setMaxNewConnPerMinPerIp("0");
+            if (StrUtil.isBlank(rules.getRevFirstPkgTimeoutMills())) rules.setRevFirstPkgTimeoutMills("0");
 
             rulesService.insertSelective(rules);
         }else if (rules.getId() > 0){
