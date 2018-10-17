@@ -4,11 +4,7 @@ import com.yourui.web.model.GatewayAddress;
 import com.yourui.web.model.GatewayAddressExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
-/**
- * 网关地址
- * @author YI
- * @date 2018-6-19 12:36:42
- */
+
 public interface GatewayAddressMapper {
     long countByExample(GatewayAddressExample example);
 

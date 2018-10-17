@@ -51,6 +51,11 @@ public class GatewayAddressServiceImpl implements GatewayAddressService {
     }
 
     @Override
+    public int updateByPrimaryKeySelective(GatewayAddress record) {
+        return gatewayAddressMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
     public int insertSelective(GatewayAddress record) {
         return gatewayAddressMapper.insertSelective(record);
     }
@@ -62,6 +67,17 @@ public class GatewayAddressServiceImpl implements GatewayAddressService {
 
         criteria.andDelNotEqualTo(Status.RED.getValue());
         criteria.andIdIn(ids);
+
+        return gatewayAddressMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<GatewayAddress> selectByIP(String ip) {
+        GatewayAddressExample example = new GatewayAddressExample();
+        GatewayAddressExample.Criteria criteria = example.createCriteria();
+
+        criteria.andDelNotEqualTo(Status.RED.getValue());
+        criteria.andInternalNetworkIpEqualTo(ip);
 
         return gatewayAddressMapper.selectByExample(example);
     }

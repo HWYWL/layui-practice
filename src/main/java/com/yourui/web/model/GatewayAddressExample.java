@@ -185,73 +185,213 @@ public class GatewayAddressExample {
             return (Criteria) this;
         }
 
-        public Criteria andIpIsNull() {
-            addCriterion("ip is null");
+        public Criteria andInternalNetworkIpIsNull() {
+            addCriterion("internal_network_ip is null");
             return (Criteria) this;
         }
 
-        public Criteria andIpIsNotNull() {
-            addCriterion("ip is not null");
+        public Criteria andInternalNetworkIpIsNotNull() {
+            addCriterion("internal_network_ip is not null");
             return (Criteria) this;
         }
 
-        public Criteria andIpEqualTo(String value) {
-            addCriterion("ip =", value, "ip");
+        public Criteria andInternalNetworkIpEqualTo(String value) {
+            addCriterion("internal_network_ip =", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpNotEqualTo(String value) {
-            addCriterion("ip <>", value, "ip");
+        public Criteria andInternalNetworkIpNotEqualTo(String value) {
+            addCriterion("internal_network_ip <>", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpGreaterThan(String value) {
-            addCriterion("ip >", value, "ip");
+        public Criteria andInternalNetworkIpGreaterThan(String value) {
+            addCriterion("internal_network_ip >", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpGreaterThanOrEqualTo(String value) {
-            addCriterion("ip >=", value, "ip");
+        public Criteria andInternalNetworkIpGreaterThanOrEqualTo(String value) {
+            addCriterion("internal_network_ip >=", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpLessThan(String value) {
-            addCriterion("ip <", value, "ip");
+        public Criteria andInternalNetworkIpLessThan(String value) {
+            addCriterion("internal_network_ip <", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpLessThanOrEqualTo(String value) {
-            addCriterion("ip <=", value, "ip");
+        public Criteria andInternalNetworkIpLessThanOrEqualTo(String value) {
+            addCriterion("internal_network_ip <=", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpLike(String value) {
-            addCriterion("ip like", value, "ip");
+        public Criteria andInternalNetworkIpLike(String value) {
+            addCriterion("internal_network_ip like", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpNotLike(String value) {
-            addCriterion("ip not like", value, "ip");
+        public Criteria andInternalNetworkIpNotLike(String value) {
+            addCriterion("internal_network_ip not like", value, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpIn(List<String> values) {
-            addCriterion("ip in", values, "ip");
+        public Criteria andInternalNetworkIpIn(List<String> values) {
+            addCriterion("internal_network_ip in", values, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpNotIn(List<String> values) {
-            addCriterion("ip not in", values, "ip");
+        public Criteria andInternalNetworkIpNotIn(List<String> values) {
+            addCriterion("internal_network_ip not in", values, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpBetween(String value1, String value2) {
-            addCriterion("ip between", value1, value2, "ip");
+        public Criteria andInternalNetworkIpBetween(String value1, String value2) {
+            addCriterion("internal_network_ip between", value1, value2, "internalNetworkIp");
             return (Criteria) this;
         }
 
-        public Criteria andIpNotBetween(String value1, String value2) {
-            addCriterion("ip not between", value1, value2, "ip");
+        public Criteria andInternalNetworkIpNotBetween(String value1, String value2) {
+            addCriterion("internal_network_ip not between", value1, value2, "internalNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpIsNull() {
+            addCriterion("outside_network_ip is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpIsNotNull() {
+            addCriterion("outside_network_ip is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpEqualTo(String value) {
+            addCriterion("outside_network_ip =", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpNotEqualTo(String value) {
+            addCriterion("outside_network_ip <>", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpGreaterThan(String value) {
+            addCriterion("outside_network_ip >", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpGreaterThanOrEqualTo(String value) {
+            addCriterion("outside_network_ip >=", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpLessThan(String value) {
+            addCriterion("outside_network_ip <", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpLessThanOrEqualTo(String value) {
+            addCriterion("outside_network_ip <=", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpLike(String value) {
+            addCriterion("outside_network_ip like", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpNotLike(String value) {
+            addCriterion("outside_network_ip not like", value, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpIn(List<String> values) {
+            addCriterion("outside_network_ip in", values, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpNotIn(List<String> values) {
+            addCriterion("outside_network_ip not in", values, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpBetween(String value1, String value2) {
+            addCriterion("outside_network_ip between", value1, value2, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andOutsideNetworkIpNotBetween(String value1, String value2) {
+            addCriterion("outside_network_ip not between", value1, value2, "outsideNetworkIp");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListIsNull() {
+            addCriterion("port_list is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListIsNotNull() {
+            addCriterion("port_list is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListEqualTo(String value) {
+            addCriterion("port_list =", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListNotEqualTo(String value) {
+            addCriterion("port_list <>", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListGreaterThan(String value) {
+            addCriterion("port_list >", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListGreaterThanOrEqualTo(String value) {
+            addCriterion("port_list >=", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListLessThan(String value) {
+            addCriterion("port_list <", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListLessThanOrEqualTo(String value) {
+            addCriterion("port_list <=", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListLike(String value) {
+            addCriterion("port_list like", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListNotLike(String value) {
+            addCriterion("port_list not like", value, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListIn(List<String> values) {
+            addCriterion("port_list in", values, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListNotIn(List<String> values) {
+            addCriterion("port_list not in", values, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListBetween(String value1, String value2) {
+            addCriterion("port_list between", value1, value2, "portList");
+            return (Criteria) this;
+        }
+
+        public Criteria andPortListNotBetween(String value1, String value2) {
+            addCriterion("port_list not between", value1, value2, "portList");
             return (Criteria) this;
         }
 

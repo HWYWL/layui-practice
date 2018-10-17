@@ -15,6 +15,12 @@
 </fieldset>
 
 <form class="layui-form" action="">
+    <div class="layui-form-item" style="display: none">
+        <div class="layui-input-block">
+            <input type="text" name="id" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
     <div class="layui-form-item">
         <label class="layui-form-label">用户组名称</label>
         <div class="layui-input-block">
@@ -34,15 +40,6 @@
     <label class="layui-form-label">防御网关</label>
     <div class="layui-input-block" id="userRuleGroups">
 
-    </div>
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">游戏</label>
-        <div class="layui-input-block">
-            <select name="gameId" lay-verify="required" lay-filter="gameId" id="games">
-                <option value=""></option>
-            </select>
-        </div>
     </div>
 
     <div class="layui-form-item">

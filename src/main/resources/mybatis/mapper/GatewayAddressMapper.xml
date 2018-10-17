@@ -3,7 +3,9 @@
 <mapper namespace="com.yourui.web.dao.GatewayAddressMapper">
   <resultMap id="BaseResultMap" type="com.yourui.web.model.GatewayAddress">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="internal_network_ip" jdbcType="VARCHAR" property="internalNetworkIp" />
+    <result column="outside_network_ip" jdbcType="VARCHAR" property="outsideNetworkIp" />
+    <result column="port_list" jdbcType="VARCHAR" property="portList" />
     <result column="gateway_address_name" jdbcType="VARCHAR" property="gatewayAddressName" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="del" jdbcType="TINYINT" property="del" />
@@ -68,7 +70,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, ip, gateway_address_name, remark, del, crtTime
+    id, internal_network_ip, outside_network_ip, port_list, gateway_address_name, remark, 
+    del, crtTime
   </sql>
   <select id="selectByExample" parameterType="com.yourui.web.model.GatewayAddressExample" resultMap="BaseResultMap">
     select
@@ -92,17 +95,17 @@
       </if>
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from gateway_address
-    where id = #{id,jdbcType=BIGINT}
-  </select>
   <select id="selectId" parameterType="java.lang.Byte" resultType="java.lang.Long">
     select
     id
     from gateway_address
     where del = #{del,jdbcType=TINYINT}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from gateway_address
+    where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from gateway_address
@@ -115,12 +118,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.yourui.web.model.GatewayAddress">
-    insert into gateway_address (id, ip, gateway_address_name, 
-      remark, del, crtTime
-      )
-    values (#{id,jdbcType=BIGINT}, #{ip,jdbcType=VARCHAR}, #{gatewayAddressName,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR}, #{del,jdbcType=TINYINT}, #{crttime,jdbcType=TIMESTAMP}
-      )
+    insert into gateway_address (id, internal_network_ip, outside_network_ip, 
+      port_list, gateway_address_name, remark, 
+      del, crtTime)
+    values (#{id,jdbcType=BIGINT}, #{internalNetworkIp,jdbcType=VARCHAR}, #{outsideNetworkIp,jdbcType=VARCHAR}, 
+      #{portList,jdbcType=VARCHAR}, #{gatewayAddressName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{del,jdbcType=TINYINT}, #{crttime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yourui.web.model.GatewayAddress">
     insert into gateway_address
@@ -128,8 +131,14 @@
       <if test="id != null">
         id,
       </if>
-      <if test="ip != null">
-        ip,
+      <if test="internalNetworkIp != null">
+        internal_network_ip,
+      </if>
+      <if test="outsideNetworkIp != null">
+        outside_network_ip,
+      </if>
+      <if test="portList != null">
+        port_list,
       </if>
       <if test="gatewayAddressName != null">
         gateway_address_name,
@@ -148,8 +157,14 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="ip != null">
-        #{ip,jdbcType=VARCHAR},
+      <if test="internalNetworkIp != null">
+        #{internalNetworkIp,jdbcType=VARCHAR},
+      </if>
+      <if test="outsideNetworkIp != null">
+        #{outsideNetworkIp,jdbcType=VARCHAR},
+      </if>
+      <if test="portList != null">
+        #{portList,jdbcType=VARCHAR},
       </if>
       <if test="gatewayAddressName != null">
         #{gatewayAddressName,jdbcType=VARCHAR},
@@ -177,8 +192,14 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.ip != null">
-        ip = #{record.ip,jdbcType=VARCHAR},
+      <if test="record.internalNetworkIp != null">
+        internal_network_ip = #{record.internalNetworkIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.outsideNetworkIp != null">
+        outside_network_ip = #{record.outsideNetworkIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.portList != null">
+        port_list = #{record.portList,jdbcType=VARCHAR},
       </if>
       <if test="record.gatewayAddressName != null">
         gateway_address_name = #{record.gatewayAddressName,jdbcType=VARCHAR},
@@ -200,7 +221,9 @@
   <update id="updateByExample" parameterType="map">
     update gateway_address
     set id = #{record.id,jdbcType=BIGINT},
-      ip = #{record.ip,jdbcType=VARCHAR},
+      internal_network_ip = #{record.internalNetworkIp,jdbcType=VARCHAR},
+      outside_network_ip = #{record.outsideNetworkIp,jdbcType=VARCHAR},
+      port_list = #{record.portList,jdbcType=VARCHAR},
       gateway_address_name = #{record.gatewayAddressName,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
       del = #{record.del,jdbcType=TINYINT},
@@ -212,8 +235,14 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yourui.web.model.GatewayAddress">
     update gateway_address
     <set>
-      <if test="ip != null">
-        ip = #{ip,jdbcType=VARCHAR},
+      <if test="internalNetworkIp != null">
+        internal_network_ip = #{internalNetworkIp,jdbcType=VARCHAR},
+      </if>
+      <if test="outsideNetworkIp != null">
+        outside_network_ip = #{outsideNetworkIp,jdbcType=VARCHAR},
+      </if>
+      <if test="portList != null">
+        port_list = #{portList,jdbcType=VARCHAR},
       </if>
       <if test="gatewayAddressName != null">
         gateway_address_name = #{gatewayAddressName,jdbcType=VARCHAR},
@@ -232,7 +261,9 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yourui.web.model.GatewayAddress">
     update gateway_address
-    set ip = #{ip,jdbcType=VARCHAR},
+    set internal_network_ip = #{internalNetworkIp,jdbcType=VARCHAR},
+      outside_network_ip = #{outsideNetworkIp,jdbcType=VARCHAR},
+      port_list = #{portList,jdbcType=VARCHAR},
       gateway_address_name = #{gatewayAddressName,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       del = #{del,jdbcType=TINYINT},

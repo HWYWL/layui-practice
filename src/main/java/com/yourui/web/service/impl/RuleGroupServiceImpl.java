@@ -31,6 +31,17 @@ public class RuleGroupServiceImpl implements RuleGroupService {
     }
 
     @Override
+    public List<RuleGroup> fidnByRuleGroupName(String ruleGroupName) {
+        RuleGroupExample example = new RuleGroupExample();
+        RuleGroupExample.Criteria criteria = example.createCriteria();
+
+        criteria.andRuleGroupNameEqualTo(ruleGroupName);
+        criteria.andDelNotEqualTo(Status.RED.getValue());
+
+        return ruleGroupMapper.selectByExample(example);
+    }
+
+    @Override
     public RuleGroup selectByPrimaryKey(Long id) {
         return ruleGroupMapper.selectByPrimaryKey(id);
     }
@@ -40,6 +51,12 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         RuleGroup ruleGroup = new RuleGroup();
         ruleGroup.setId(id);
         ruleGroup.setDel(Status.RED.getValue());
+
+        return ruleGroupMapper.updateByPrimaryKeySelective(ruleGroup);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(RuleGroup ruleGroup) {
 
         return ruleGroupMapper.updateByPrimaryKeySelective(ruleGroup);
     }

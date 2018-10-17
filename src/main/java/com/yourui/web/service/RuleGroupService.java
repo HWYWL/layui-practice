@@ -17,6 +17,13 @@ public interface RuleGroupService {
     List<RuleGroup> fidnAll();
 
     /**
+     * 根据规则组名 查找id
+     * @param ruleGroupName 规则组名
+     * @return
+     */
+    List<RuleGroup> fidnByRuleGroupName(String ruleGroupName);
+
+    /**
      * 根据id 查找
      * @param id
      * @return
@@ -29,6 +36,13 @@ public interface RuleGroupService {
      * @return
      */
     int updateById(Long id);
+
+    /**
+     * 不为空则更新
+     * @param ruleGroup
+     * @return
+     */
+    int updateByPrimaryKeySelective(RuleGroup ruleGroup);
 
     /**
      * 保存数据

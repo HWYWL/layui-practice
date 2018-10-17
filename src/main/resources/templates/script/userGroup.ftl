@@ -15,7 +15,6 @@
     <li class="layui-nav-item"><a href="/gatewayAddress">防御网关</a></li>
     <li class="layui-nav-item"><a href="/ruleGroup">规则组</a></li>
     <li class="layui-nav-item layui-this"><a href="/userGroup">用户组</a></li>
-    <li class="layui-nav-item"><a href="/game">游戏</a></li>
     <li class="layui-nav-item"><a href="/rules">规则</a></li>
 </ul>
 <div class="container">
@@ -26,7 +25,16 @@
         </div>
     </div>
 </div>
-
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">规则组</label>
+        <div class="layui-input-block" lay-filter="selFilter">
+            <select id="userGroups" name="ruleGroupIds" lay-filter="ruleGroupIds" lay-verify="required">
+                <option value="">全部规则</option>
+            </select>
+        </div>
+    </div>
+</form>
 <div class="leftright">
     <script type="text/html" id="titleTpl"></script>
 
@@ -37,6 +45,8 @@
     <script type="text/html" id="buttonl">
         <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">
             <i class="layui-icon">&#xe60a;</i>查看</a>
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+            <i class="layui-icon">&#xe642;</i>编辑</a>
         <a class="layui-btn layui-btn-xs" lay-event="exe">
             <i class="layui-icon">&#xe623;</i>执行</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">

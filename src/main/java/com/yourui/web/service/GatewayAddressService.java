@@ -37,6 +37,13 @@ public interface GatewayAddressService {
     int updateById(Long id);
 
     /**
+     * id存在则更新，不存在则插入
+     * @param record
+     * @return
+     */
+    int updateByPrimaryKeySelective(GatewayAddress record);
+
+    /**
      * 保存数据
      * @param record
      * @return
@@ -49,4 +56,11 @@ public interface GatewayAddressService {
      * @return
      */
     List<GatewayAddress> selectByIds(List<Long> ids);
+
+    /**
+     * 根据网关内网ip地址查询网关
+     * @param ip 网关内网ip
+     * @return
+     */
+    List<GatewayAddress> selectByIP(String ip);
 }

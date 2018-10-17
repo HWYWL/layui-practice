@@ -6,6 +6,7 @@
     <result column="rule_group_name" jdbcType="VARCHAR" property="ruleGroupName" />
     <result column="gateway_address_ids" jdbcType="VARCHAR" property="gatewayAddressIds" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="enable" jdbcType="TINYINT" property="enable" />
     <result column="del" jdbcType="TINYINT" property="del" />
     <result column="crtTime" jdbcType="TIMESTAMP" property="crttime" />
   </resultMap>
@@ -68,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, rule_group_name, gateway_address_ids, remark, del, crtTime
+    id, rule_group_name, gateway_address_ids, remark, enable, del, crtTime
   </sql>
   <select id="selectByExample" parameterType="com.yourui.web.model.RuleGroupExample" resultMap="BaseResultMap">
     select
@@ -110,11 +111,11 @@
   </delete>
   <insert id="insert" parameterType="com.yourui.web.model.RuleGroup">
     insert into rule_group (id, rule_group_name, gateway_address_ids, 
-      remark, del, crtTime
-      )
+      remark, enable, del, 
+      crtTime)
     values (#{id,jdbcType=BIGINT}, #{ruleGroupName,jdbcType=VARCHAR}, #{gatewayAddressIds,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR}, #{del,jdbcType=TINYINT}, #{crttime,jdbcType=TIMESTAMP}
-      )
+      #{remark,jdbcType=VARCHAR}, #{enable,jdbcType=TINYINT}, #{del,jdbcType=TINYINT}, 
+      #{crttime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yourui.web.model.RuleGroup">
     insert into rule_group
@@ -130,6 +131,9 @@
       </if>
       <if test="remark != null">
         remark,
+      </if>
+      <if test="enable != null">
+        enable,
       </if>
       <if test="del != null">
         del,
@@ -150,6 +154,9 @@
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null">
+        #{enable,jdbcType=TINYINT},
       </if>
       <if test="del != null">
         #{del,jdbcType=TINYINT},
@@ -180,6 +187,9 @@
       <if test="record.remark != null">
         remark = #{record.remark,jdbcType=VARCHAR},
       </if>
+      <if test="record.enable != null">
+        enable = #{record.enable,jdbcType=TINYINT},
+      </if>
       <if test="record.del != null">
         del = #{record.del,jdbcType=TINYINT},
       </if>
@@ -197,6 +207,7 @@
       rule_group_name = #{record.ruleGroupName,jdbcType=VARCHAR},
       gateway_address_ids = #{record.gatewayAddressIds,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
+      enable = #{record.enable,jdbcType=TINYINT},
       del = #{record.del,jdbcType=TINYINT},
       crtTime = #{record.crttime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
@@ -215,6 +226,9 @@
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="enable != null">
+        enable = #{enable,jdbcType=TINYINT},
+      </if>
       <if test="del != null">
         del = #{del,jdbcType=TINYINT},
       </if>
@@ -229,6 +243,7 @@
     set rule_group_name = #{ruleGroupName,jdbcType=VARCHAR},
       gateway_address_ids = #{gatewayAddressIds,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
+      enable = #{enable,jdbcType=TINYINT},
       del = #{del,jdbcType=TINYINT},
       crtTime = #{crttime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

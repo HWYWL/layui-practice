@@ -3,9 +3,16 @@
 <mapper namespace="com.yourui.web.dao.RulesMapper">
   <resultMap id="BaseResultMap" type="com.yourui.web.model.Rules">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="game_id" jdbcType="BIGINT" property="gameId" />
     <result column="rule_group_id" jdbcType="BIGINT" property="ruleGroupId" />
+    <result column="from_port" jdbcType="BIGINT" property="fromPort" />
+    <result column="to_port" jdbcType="BIGINT" property="toPort" />
+    <result column="to_ip" jdbcType="VARCHAR" property="toIp" />
     <result column="rule_name" jdbcType="VARCHAR" property="ruleName" />
+    <result column="agreement" jdbcType="VARCHAR" property="agreement" />
+    <result column="max_concurrent_conn" jdbcType="VARCHAR" property="maxConcurrentConn" />
+    <result column="max_concurrent_conn_per_ip" jdbcType="VARCHAR" property="maxConcurrentConnPerIp" />
+    <result column="max_new_conn_per_min_per_ip" jdbcType="VARCHAR" property="maxNewConnPerMinPerIp" />
+    <result column="rev_first_pkg_timeout_mills" jdbcType="VARCHAR" property="revFirstPkgTimeoutMills" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="del" jdbcType="TINYINT" property="del" />
     <result column="crtTime" jdbcType="TIMESTAMP" property="crttime" />
@@ -69,7 +76,9 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, game_id, rule_group_id, rule_name, remark, del, crtTime
+    id, rule_group_id, from_port, to_port, to_ip, rule_name, agreement, max_concurrent_conn, 
+    max_concurrent_conn_per_ip, max_new_conn_per_min_per_ip, rev_first_pkg_timeout_mills, 
+    remark, del, crtTime
   </sql>
   <select id="selectByExample" parameterType="com.yourui.web.model.RulesExample" resultMap="BaseResultMap">
     select
@@ -110,12 +119,18 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.yourui.web.model.Rules">
-    insert into rules (id, game_id, rule_group_id, 
-      rule_name, remark, del, 
-      crtTime)
-    values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{ruleGroupId,jdbcType=BIGINT}, 
-      #{ruleName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{del,jdbcType=TINYINT}, 
-      #{crttime,jdbcType=TIMESTAMP})
+    insert into rules (id, rule_group_id, from_port, 
+      to_port, to_ip, rule_name, 
+      agreement, max_concurrent_conn, max_concurrent_conn_per_ip, 
+      max_new_conn_per_min_per_ip, rev_first_pkg_timeout_mills, 
+      remark, del, crtTime
+      )
+    values (#{id,jdbcType=BIGINT}, #{ruleGroupId,jdbcType=BIGINT}, #{fromPort,jdbcType=BIGINT}, 
+      #{toPort,jdbcType=BIGINT}, #{toIp,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR}, 
+      #{agreement,jdbcType=VARCHAR}, #{maxConcurrentConn,jdbcType=VARCHAR}, #{maxConcurrentConnPerIp,jdbcType=VARCHAR}, 
+      #{maxNewConnPerMinPerIp,jdbcType=VARCHAR}, #{revFirstPkgTimeoutMills,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{del,jdbcType=TINYINT}, #{crttime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yourui.web.model.Rules">
     insert into rules
@@ -123,14 +138,35 @@
       <if test="id != null">
         id,
       </if>
-      <if test="gameId != null">
-        game_id,
-      </if>
       <if test="ruleGroupId != null">
         rule_group_id,
       </if>
+      <if test="fromPort != null">
+        from_port,
+      </if>
+      <if test="toPort != null">
+        to_port,
+      </if>
+      <if test="toIp != null">
+        to_ip,
+      </if>
       <if test="ruleName != null">
         rule_name,
+      </if>
+      <if test="agreement != null">
+        agreement,
+      </if>
+      <if test="maxConcurrentConn != null">
+        max_concurrent_conn,
+      </if>
+      <if test="maxConcurrentConnPerIp != null">
+        max_concurrent_conn_per_ip,
+      </if>
+      <if test="maxNewConnPerMinPerIp != null">
+        max_new_conn_per_min_per_ip,
+      </if>
+      <if test="revFirstPkgTimeoutMills != null">
+        rev_first_pkg_timeout_mills,
       </if>
       <if test="remark != null">
         remark,
@@ -146,14 +182,35 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="gameId != null">
-        #{gameId,jdbcType=BIGINT},
-      </if>
       <if test="ruleGroupId != null">
         #{ruleGroupId,jdbcType=BIGINT},
       </if>
+      <if test="fromPort != null">
+        #{fromPort,jdbcType=BIGINT},
+      </if>
+      <if test="toPort != null">
+        #{toPort,jdbcType=BIGINT},
+      </if>
+      <if test="toIp != null">
+        #{toIp,jdbcType=VARCHAR},
+      </if>
       <if test="ruleName != null">
         #{ruleName,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement != null">
+        #{agreement,jdbcType=VARCHAR},
+      </if>
+      <if test="maxConcurrentConn != null">
+        #{maxConcurrentConn,jdbcType=VARCHAR},
+      </if>
+      <if test="maxConcurrentConnPerIp != null">
+        #{maxConcurrentConnPerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="maxNewConnPerMinPerIp != null">
+        #{maxNewConnPerMinPerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="revFirstPkgTimeoutMills != null">
+        #{revFirstPkgTimeoutMills,jdbcType=VARCHAR},
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
@@ -178,14 +235,35 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.gameId != null">
-        game_id = #{record.gameId,jdbcType=BIGINT},
-      </if>
       <if test="record.ruleGroupId != null">
         rule_group_id = #{record.ruleGroupId,jdbcType=BIGINT},
       </if>
+      <if test="record.fromPort != null">
+        from_port = #{record.fromPort,jdbcType=BIGINT},
+      </if>
+      <if test="record.toPort != null">
+        to_port = #{record.toPort,jdbcType=BIGINT},
+      </if>
+      <if test="record.toIp != null">
+        to_ip = #{record.toIp,jdbcType=VARCHAR},
+      </if>
       <if test="record.ruleName != null">
         rule_name = #{record.ruleName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.agreement != null">
+        agreement = #{record.agreement,jdbcType=VARCHAR},
+      </if>
+      <if test="record.maxConcurrentConn != null">
+        max_concurrent_conn = #{record.maxConcurrentConn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.maxConcurrentConnPerIp != null">
+        max_concurrent_conn_per_ip = #{record.maxConcurrentConnPerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.maxNewConnPerMinPerIp != null">
+        max_new_conn_per_min_per_ip = #{record.maxNewConnPerMinPerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.revFirstPkgTimeoutMills != null">
+        rev_first_pkg_timeout_mills = #{record.revFirstPkgTimeoutMills,jdbcType=VARCHAR},
       </if>
       <if test="record.remark != null">
         remark = #{record.remark,jdbcType=VARCHAR},
@@ -204,9 +282,16 @@
   <update id="updateByExample" parameterType="map">
     update rules
     set id = #{record.id,jdbcType=BIGINT},
-      game_id = #{record.gameId,jdbcType=BIGINT},
       rule_group_id = #{record.ruleGroupId,jdbcType=BIGINT},
+      from_port = #{record.fromPort,jdbcType=BIGINT},
+      to_port = #{record.toPort,jdbcType=BIGINT},
+      to_ip = #{record.toIp,jdbcType=VARCHAR},
       rule_name = #{record.ruleName,jdbcType=VARCHAR},
+      agreement = #{record.agreement,jdbcType=VARCHAR},
+      max_concurrent_conn = #{record.maxConcurrentConn,jdbcType=VARCHAR},
+      max_concurrent_conn_per_ip = #{record.maxConcurrentConnPerIp,jdbcType=VARCHAR},
+      max_new_conn_per_min_per_ip = #{record.maxNewConnPerMinPerIp,jdbcType=VARCHAR},
+      rev_first_pkg_timeout_mills = #{record.revFirstPkgTimeoutMills,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
       del = #{record.del,jdbcType=TINYINT},
       crtTime = #{record.crttime,jdbcType=TIMESTAMP}
@@ -217,14 +302,35 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yourui.web.model.Rules">
     update rules
     <set>
-      <if test="gameId != null">
-        game_id = #{gameId,jdbcType=BIGINT},
-      </if>
       <if test="ruleGroupId != null">
         rule_group_id = #{ruleGroupId,jdbcType=BIGINT},
       </if>
+      <if test="fromPort != null">
+        from_port = #{fromPort,jdbcType=BIGINT},
+      </if>
+      <if test="toPort != null">
+        to_port = #{toPort,jdbcType=BIGINT},
+      </if>
+      <if test="toIp != null">
+        to_ip = #{toIp,jdbcType=VARCHAR},
+      </if>
       <if test="ruleName != null">
         rule_name = #{ruleName,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement != null">
+        agreement = #{agreement,jdbcType=VARCHAR},
+      </if>
+      <if test="maxConcurrentConn != null">
+        max_concurrent_conn = #{maxConcurrentConn,jdbcType=VARCHAR},
+      </if>
+      <if test="maxConcurrentConnPerIp != null">
+        max_concurrent_conn_per_ip = #{maxConcurrentConnPerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="maxNewConnPerMinPerIp != null">
+        max_new_conn_per_min_per_ip = #{maxNewConnPerMinPerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="revFirstPkgTimeoutMills != null">
+        rev_first_pkg_timeout_mills = #{revFirstPkgTimeoutMills,jdbcType=VARCHAR},
       </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
@@ -240,9 +346,16 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yourui.web.model.Rules">
     update rules
-    set game_id = #{gameId,jdbcType=BIGINT},
-      rule_group_id = #{ruleGroupId,jdbcType=BIGINT},
+    set rule_group_id = #{ruleGroupId,jdbcType=BIGINT},
+      from_port = #{fromPort,jdbcType=BIGINT},
+      to_port = #{toPort,jdbcType=BIGINT},
+      to_ip = #{toIp,jdbcType=VARCHAR},
       rule_name = #{ruleName,jdbcType=VARCHAR},
+      agreement = #{agreement,jdbcType=VARCHAR},
+      max_concurrent_conn = #{maxConcurrentConn,jdbcType=VARCHAR},
+      max_concurrent_conn_per_ip = #{maxConcurrentConnPerIp,jdbcType=VARCHAR},
+      max_new_conn_per_min_per_ip = #{maxNewConnPerMinPerIp,jdbcType=VARCHAR},
+      rev_first_pkg_timeout_mills = #{revFirstPkgTimeoutMills,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       del = #{del,jdbcType=TINYINT},
       crtTime = #{crttime,jdbcType=TIMESTAMP}

@@ -15,7 +15,6 @@
     <li class="layui-nav-item layui-this"><a href="/gatewayAddress">防御网关</a></li>
     <li class="layui-nav-item"><a href="/ruleGroup">规则组</a></li>
     <li class="layui-nav-item"><a href="/userGroup">用户组</a></li>
-    <li class="layui-nav-item"><a href="/game">游戏</a></li>
     <li class="layui-nav-item"><a href="/rules">规则</a></li>
 </ul>
 <div class="container">
@@ -37,13 +36,19 @@
     <script type="text/html" id="buttonl">
         <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">
             <i class="layui-icon">&#xe60a;</i>查看</a>
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+            <i class="layui-icon">&#xe642;</i>编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="exe">
+            <i class="layui-icon">&#xe623;</i>执行</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
             <i class="layui-icon">&#xe640;</i>删除</a>
     </script>
 </div>
-<div class="center-button">
+<div class="index-button">
     <button class="layui-btn layui-btn layui-btn-sm" lay-submit lay-filter="addGatewayAddress">
         <i class="layui-icon">&#xe608;</i>添加网关</button>
+    <button class="layui-btn layui-btn layui-btn-sm" lay-submit lay-filter="synConfig">
+        <i class="layui-icon">&#xe669;</i>一键同步</button>
 </div>
 
 

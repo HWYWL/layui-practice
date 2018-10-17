@@ -28,6 +28,11 @@ public class RuleGroup implements Serializable {
     private String remark;
 
     /**
+     * 随机端口 0：启用、-1：关闭
+     */
+    private Byte enable;
+
+    /**
      * 0：正常使用、-1：已被删除
      */
     private Byte del;
@@ -69,6 +74,14 @@ public class RuleGroup implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Byte getEnable() {
+        return enable;
+    }
+
+    public void setEnable(Byte enable) {
+        this.enable = enable;
     }
 
     public Byte getDel() {

@@ -1,6 +1,5 @@
 package com.yourui.web.controller;
 
-import com.yourui.web.service.GameService;
 import com.yourui.web.service.GatewayAddressService;
 import com.yourui.web.service.RuleGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,19 @@ public class PagesController {
     GatewayAddressService gatewayAddressService;
     @Autowired
     RuleGroupService ruleGroupService;
-    @Autowired
-    GameService gameService;
 
     /**
      * 主页 网关页面
      * @return
      */
-    @RequestMapping("/")
+//    @RequestMapping("/")
+//    public String index(){
+//        return "index";
+//    }
+
+   @RequestMapping("/login")
     public String index(){
-        return "index";
+        return "login";
     }
 
     /**

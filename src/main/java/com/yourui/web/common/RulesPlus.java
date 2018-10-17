@@ -16,10 +16,6 @@ public class RulesPlus extends Rules implements Serializable {
      * 规则组名
      */
     private String ruleGroupName;
-    /**
-     * 游戏名
-     */
-    private String gameName;
 
     public String getUserGroupName() {
         return userGroupName;
@@ -37,20 +33,11 @@ public class RulesPlus extends Rules implements Serializable {
         this.ruleGroupName = ruleGroupName;
     }
 
-    public String getGameName() {
-        return gameName;
-    }
-
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
-    }
-
     @Override
     public String toString() {
         return "RulesPlus{" +
                 "userGroupName='" + userGroupName + '\'' +
                 ", ruleGroupName='" + ruleGroupName + '\'' +
-                ", gameName='" + gameName + '\'' +
                 '}';
     }
 }

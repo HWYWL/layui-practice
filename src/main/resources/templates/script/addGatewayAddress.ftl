@@ -15,15 +15,29 @@
 </fieldset>
 
 <form class="layui-form" action="">
-    <div class="layui-form-item">
-        <label class="layui-form-label">网关ip地址</label>
+
+    <div class="layui-form-item" style="display: none">
         <div class="layui-input-block">
-            <input type="text" name="ip" lay-verify="required" autocomplete="off" placeholder="请输入网关ip地址,不可为空!" class="layui-input">
+            <input type="text" name="id" autocomplete="off" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">网关服务器名称</label>
+        <label class="layui-form-label">网关内网ip</label>
+        <div class="layui-input-block">
+            <input type="text" name="internalNetworkIp" lay-verify="required" autocomplete="off" placeholder="请输入网关内网ip地址,不可为空!" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">网关外网ip</label>
+        <div class="layui-input-block">
+            <input type="text" name="outsideNetworkIp" lay-verify="required" autocomplete="off" placeholder="请输入网关外网ip地址,不可为空!" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">网关服务器</label>
         <div class="layui-input-block">
             <input type="text" name="gatewayAddressName" lay-verify="required" autocomplete="off" placeholder="请输入网关服务器名称,不可为空" class="layui-input">
         </div>

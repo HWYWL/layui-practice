@@ -5,8 +5,8 @@ layui.use(['table','form'], function() {
 });
 
 function initTable() {
+    var table = layui.table,form = layui.form;
     layui.use('table', function(){
-        var table = layui.table,form = layui.form;
 
         table.render({
             elem: '#scriptTable'
@@ -16,7 +16,6 @@ function initTable() {
                 {field:'id', title: 'id'}
                 ,{field:'userGroupName', title: '用户组组名'}
                 ,{field:'ruleGroupIds', title: '所属规则组id'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                ,{field:'gameId', title: '游戏id'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
                 ,{field:'gatewayAddressIds', title: '所属该组的网关id'}
                 ,{field:'remark', title: '备注'}
                 ,{field:'crttime', title: '创建时间'}
@@ -38,6 +37,22 @@ function initTable() {
                     about:true,
 
                     content: '/userGroup/detail?id=' + data.id
+                });
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 2,
+                    title: '编辑脚本',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['50%', '50%'],
+                    about:true,
+
+                    content: '/addUserGroup',
+                    success: function (layero, index) {
+                        //传入参数，并赋值给iframe的元素
+                        var body = layer.getChildFrame('body', index);
+                        body.append("<label class='layui-form-label' id='userGroupId' style='display: none'>ID：" + data.id + "</label>");
+                    }
                 });
             } else if(obj.event === 'del'){
                 layer.confirm('确定删除?', {icon: 3, title:'删除'}, function(index){
@@ -99,11 +114,66 @@ function initTable() {
             // return false;
         });
     });
+
+    form.on('select(ruleGroupIds)', function(data){
+        console.log(data.elem); //得到select原始DOM对象
+        console.log(data.value); //得到被选中的值
+        var id = data.value;
+        if (id == "undefined" || id == ""){
+            table.render({
+                elem: '#scriptTable'
+                ,url:'/userGroup/fidnAll'
+                ,cellMinWidth: 20 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                ,cols: [[
+                    {field:'id', title: 'id'}
+                    ,{field:'userGroupName', title: '用户组组名'}
+                    ,{field:'ruleGroupIds', title: '所属规则组id'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    ,{field:'gatewayAddressIds', title: '所属该组的网关id'}
+                    ,{field:'remark', title: '备注'}
+                    ,{field:'crttime', title: '创建时间'}
+                    ,{field:'', title: '查看/执行/删除', templet: '#buttonl', unresize: true}
+                ]]
+            });
+        } else {
+            table.render({
+                elem: '#scriptTable'
+                ,url:'/userGroup/fidnByRuleGroupId?id=' + id
+                ,cellMinWidth: 20 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                ,cols: [[
+                    {field:'id', title: 'id'}
+                    ,{field:'userGroupName', title: '用户组组名'}
+                    ,{field:'ruleGroupIds', title: '所属规则组id'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    ,{field:'gatewayAddressIds', title: '所属该组的网关id'}
+                    ,{field:'remark', title: '备注'}
+                    ,{field:'crttime', title: '创建时间'}
+                    ,{field:'', title: '查看/执行/删除', templet: '#buttonl', unresize: true}
+                ]]
+            });
+        }
+
+    });
+
+    $.ajax({
+        url: "/rules/fidnNetGroupGateway",
+        type: "POST",
+        async : true,
+        success: function(data){
+            // 获取父目录传递过来的id
+            var ruleGroups = data.data.ruleGroups;
+
+            for (var i = 0; i < ruleGroups.length;i++){
+                $("#userGroups").append("<option value="+ ruleGroups[i].id +">"+ ruleGroups[i].ruleGroupName +"</option>");
+            }
+
+            form.render();
+        }
+    });
+
 }
 
 //更改状态
 function updateStatus(obj){
-    layer.load(1,{time: 2*1000});
+    var load = layer.load(2);
     var newStatus = obj.elem.checked?0:-1;
     var id = obj.elem.value;
     var scriptInfo = '{"id":"'+id+'",'+'"enable":"'+newStatus+'"}';
@@ -116,6 +186,7 @@ function updateStatus(obj){
         contentType: "application/json",
         success: function(data){
             layer.closeAll('loading');
+            layer.closeAll(load);
             if(data.code==0){
                 layer.msg(data.msg,{icon: 1});
             }else{

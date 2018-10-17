@@ -58,6 +58,11 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    public int updateByPrimaryKeySelective(UserGroup record) {
+        return userGroupMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
     public int insertSelective(UserGroup record) {
         return userGroupMapper.insertSelective(record);
     }

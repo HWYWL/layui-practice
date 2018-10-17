@@ -15,19 +15,16 @@
 </fieldset>
 
 <form class="layui-form" action="">
-    <div class="layui-form-item">
-        <label class="layui-form-label">规则名称</label>
+    <div class="layui-form-item" style="display: none">
         <div class="layui-input-block">
-            <input type="text" name="ruleName" lay-verify="required" autocomplete="off" placeholder="请输入规则名称,不可为空!" class="layui-input">
+            <input type="text" name="id" autocomplete="off" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">游戏</label>
+        <label class="layui-form-label">规则名称</label>
         <div class="layui-input-block">
-            <select name="gameId" lay-verify="required" lay-filter="gameId" id="games">
-                <option value=""></option>
-            </select>
+            <input type="text" name="ruleName" lay-verify="required" autocomplete="off" placeholder="请输入规则名称,不可为空!" class="layui-input">
         </div>
     </div>
 
@@ -37,6 +34,74 @@
             <select id="ruleUserGroups" name="ruleGroupId" lay-filter="userGroupId" lay-verify="required">
                 <option value=""></option>
             </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">来源端口</label>
+            <div class="layui-input-inline">
+                <input type="text" name="fromPort" lay-verify="required" placeholder="请输入,例如8080" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">协议</label>
+            <div class="layui-input-inline">
+                <select id="agreement" name="agreement" lay-verify="required">
+                    <option value=""></option>
+                    <option value="tcp">tcp</option>
+                    <option value="udp">udp</option>
+                    <option value="http">http</option>
+                    <option value="tcp_game">tcp_game</option>
+                    <option value="udp_game">udp_game</option>
+                    <option value="http_game">http_game</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">转发端口</label>
+            <div class="layui-input-inline">
+                <input type="text" name="toPort" lay-verify="required" placeholder="请输入,例如8080" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">转发ip</label>
+            <div class="layui-input-inline">
+                <input type="text" name="toIp" lay-verify="required" placeholder="请输入,例如192.168.1.105" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">代理最大并发连接数</label>
+            <div class="layui-input-inline">
+                <input type="text" name="maxConcurrentConn" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">每个ip最大并发连接数</label>
+            <div class="layui-input-inline">
+                <input type="text" name="maxConcurrentConnPerIp" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">每个ip每分钟最大新建连接数</label>
+            <div class="layui-input-inline">
+                <input type="text" name="maxNewConnPerMinPerIp" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">首包超时毫秒数</label>
+            <div class="layui-input-inline">
+                <input type="text" name="revFirstPkgTimeoutMills" placeholder="默认为0，表示不限制" autocomplete="off" class="layui-input">
+            </div>
         </div>
     </div>
 
