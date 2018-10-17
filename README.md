@@ -1,5 +1,5 @@
 # layui-practice
-layui的实践测试,后台基于spring boot，一个小型定制配置中心
+layui的实践测试,后台基于spring boot，代码重构
 
 --- 
 验证layui的常用功能，通过后端数据自动生成前端数据填充！！！
