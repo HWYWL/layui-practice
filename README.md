@@ -13,3 +13,9 @@ layui的实践测试,后台基于spring boot，代码重构
 
 # 执行效果
 ![](https://i.imgur.com/h6H3xiW.gif)
+
+### 问题建议
+
+- 联系我的邮箱：ilovey_hwy@163.com
+- 我的博客：http://www.hwy.ac.cn
+- GitHub：https://github.com/HWYWL
